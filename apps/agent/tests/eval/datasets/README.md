@@ -1,5 +1,18 @@
 # Evaluation Datasets
 
+## Files
+
+| File | Cases | Purpose |
+|------|-------|---------|
+| `basic-dataset.json` | 3 | Baseline smoke-test (oil spills + 2 edge cases) |
+| `full-dataset.json` | 10 | Full M3 suite: 7 SDG problems + 3 edge cases |
+
+Run the full suite:
+```bash
+agents-cli eval generate --dataset tests/eval/datasets/full-dataset.json --output tests/eval/traces/
+agents-cli eval grade --traces tests/eval/traces/<timestamped-file>.json
+```
+
 This directory contains evaluation datasets for testing agent behavior.
 
 ## Running Evaluations

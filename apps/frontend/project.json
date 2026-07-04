@@ -70,6 +70,13 @@
         "staticFilePath": "dist/apps/frontend/browser",
         "spa": true
       }
+    },
+    "deploy": {
+      "dependsOn": ["build"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker build --platform linux/amd64 -t gcr.io/built-with-ai-gdg-wroclaw/frontend -f apps/frontend/Dockerfile . && docker push gcr.io/built-with-ai-gdg-wroclaw/frontend && gcloud run deploy frontend --image gcr.io/built-with-ai-gdg-wroclaw/frontend --platform managed --region us-central1 --allow-unauthenticated --project built-with-ai-gdg-wroclaw"
+      }
     }
   }
 }

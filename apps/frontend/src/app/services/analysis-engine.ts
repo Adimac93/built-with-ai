@@ -1,96 +1,133 @@
-import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { ConfigProvider } from '../config/config-provider';
 import {
   EvalMode,
-  GenerationMethod,
   METHOD_LABELS,
+  MethodGroup,
   Trail,
   TrailCandidate,
 } from '../models/trail.model';
 
-const MOCK_CANDIDATES: Record<
-  GenerationMethod,
-  ReadonlyArray<readonly [source: string, description: string]>
-> = {
-  triz: [
-    [
-      'Zasada 1 · Segmentacja',
-      'Podziel kluczowy obiekt lub proces na niezależne części, tak aby zmiana lub awaria jednej nie przenosiła się na całość.',
-    ],
-    [
-      'Zasada 13 · Odwrócenie',
-      'Wykonaj działanie odwrotnie: zamień elementy ruchome z nieruchomymi albo odwróć kolejność operacji w procesie.',
-    ],
-    [
-      'Zasada 35 · Zmiana parametrów',
-      'Zmień stan, gęstość, elastyczność lub temperaturę kluczowego elementu, aby osłabić źródło sprzeczności.',
-    ],
-  ],
-  scamper: [
-    [
-      'Operator S · Substitute',
-      'Zastąp najbardziej zawodny element procesu innym materiałem, mechanizmem lub etapem o tej samej funkcji.',
-    ],
-    [
-      'Operator C · Combine',
-      'Połącz dwie istniejące funkcje lub urządzenia w jedno rozwiązanie, które eliminuje słabe ogniwo.',
-    ],
-    [
-      'Operator A · Adapt',
-      'Zaadaptuj sprawdzone rozwiązanie z innej branży lub kontekstu do warunków zgłoszonego problemu.',
-    ],
-  ],
-};
+interface TrizCandidate {
+  principle_number: number;
+  principle_name: string;
+  idea: string;
+  trace_id: string;
+}
 
-const CANDIDATE_PREFIX: Record<GenerationMethod, string> = {
-  triz: 'T',
-  scamper: 'S',
-};
+interface ScamperCandidate {
+  operator: string;
+  operator_name: string;
+  idea: string;
+  trace_id: string;
+}
 
-const MOCK_SCORES = [84, 71, 77, 63, 69, 58] as const;
-const MOCK_DELAY_MS = 1800;
+interface CandidateScore {
+  trace_id: string;
+  scores: Record<string, number>;
+  total: number;
+}
 
-/**
- * Silnik analizy. Zgodnie z zadaniem jeden przebieg generuje kandydatów
- * dwiema metodami — TRIZ (matryca kontradykcji) + SCAMPER — a ewaluacja
- * i wybór obejmują wszystkich kandydatów razem.
- * Na razie zwraca dane przykładowe (mock) — docelowo ten serwis woła
- * REST API NestJS; komponenty nie wymagają wtedy żadnych zmian.
- */
+interface SolveApiResponse {
+  step1_problem: string;
+  step2_contradiction: {
+    improving_param: number;
+    worsening_param: number;
+    justification: string;
+  };
+  step2a_lookup: {
+    improving_param: number;
+    improving_name: string;
+    worsening_param: number;
+    worsening_name: string;
+    principles: Array<{ number: string; name: string }>;
+  };
+  step3a_triz_candidates: { candidates: TrizCandidate[] };
+  step3b_scamper_candidates: { candidates: ScamperCandidate[] };
+  step4_evaluation: { evaluations: CandidateScore[] };
+  step5_choice: { winner_id: string; winner_total: number };
+}
+
 @Injectable({ providedIn: 'root' })
 export class AnalysisEngine {
-  solve(problem: string, evalMode: EvalMode): Promise<Trail> {
-    const methods: readonly GenerationMethod[] = ['triz', 'scamper'];
-    const candidates: TrailCandidate[] = methods.flatMap((method, m) =>
-      MOCK_CANDIDATES[method].map(([source, description], i) => ({
-        method,
-        source,
-        description,
-        name: `Kandydat ${CANDIDATE_PREFIX[method]}${i + 1}`,
-        score: MOCK_SCORES[(m * 3 + i) % MOCK_SCORES.length],
-      })),
-    );
-    const ranked = [...candidates].sort((a, b) => b.score - a.score);
+  private readonly http = inject(HttpClient);
+  private readonly config = inject(ConfigProvider);
 
-    const trail: Trail = {
-      problem,
+  async solve(problem: string, evalMode: EvalMode): Promise<Trail> {
+    const url = `${this.config.apiUrl()}/solve`;
+    const response = await firstValueFrom(
+      this.http.post<SolveApiResponse>(url, { problem }),
+    );
+    return this.mapToTrail(response, evalMode);
+  }
+
+  private mapToTrail(r: SolveApiResponse, evalMode: EvalMode): Trail {
+    const lookup = r.step2a_lookup ?? {};
+    const trizRaw: TrizCandidate[] = r.step3a_triz_candidates?.candidates ?? [];
+    const scamperRaw: ScamperCandidate[] = r.step3b_scamper_candidates?.candidates ?? [];
+    const evaluations: CandidateScore[] = r.step4_evaluation?.evaluations ?? [];
+
+    const scoreOf = new Map<string, number>(
+      evaluations.map((e) => [e.trace_id, e.total]),
+    );
+
+    const trizCandidates: TrailCandidate[] = trizRaw.map((c, i) => ({
+      method: 'triz' as const,
+      source: `Zasada ${c.principle_number} · ${c.principle_name}`,
+      name: `Kandydat T${i + 1}`,
+      description: c.idea,
+      score: scoreOf.get(c.trace_id) ?? 0,
+    }));
+
+    const scamperCandidates: TrailCandidate[] = scamperRaw.map((c, i) => ({
+      method: 'scamper' as const,
+      source: `Operator ${c.operator} · ${c.operator_name}`,
+      name: `Kandydat S${i + 1}`,
+      description: c.idea,
+      score: scoreOf.get(c.trace_id) ?? 0,
+    }));
+
+    const allCandidates = [...trizCandidates, ...scamperCandidates];
+    const ranked = [...allCandidates].sort((a, b) => b.score - a.score);
+
+    const winnerId = r.step5_choice?.winner_id;
+    const traceEntries = [
+      ...trizRaw.map((c, i) => ({ traceId: c.trace_id, candidate: trizCandidates[i] })),
+      ...scamperRaw.map((c, i) => ({ traceId: c.trace_id, candidate: scamperCandidates[i] })),
+    ];
+    const winner = traceEntries.find((x) => x.traceId === winnerId)?.candidate ?? ranked[0];
+
+    const principleNums = (lookup.principles ?? [])
+      .map((p) => p.number)
+      .join(' · ');
+
+    const groups: MethodGroup[] = [
+      { method: 'triz', label: METHOD_LABELS['triz'], candidates: trizCandidates },
+      { method: 'scamper', label: METHOD_LABELS['scamper'], candidates: scamperCandidates },
+    ];
+
+    return {
+      problem: r.step1_problem ?? '',
       evalMode,
       contradiction: {
-        better: { tag: 'Parametr 27', name: 'Niezawodność' },
-        worse: { tag: 'Parametr 36', name: 'Złożoność systemu' },
-        principles: '1 · 13 · 35',
+        better: {
+          tag: `Parametr ${lookup.improving_param ?? '?'}`,
+          name: lookup.improving_name ?? '',
+          paramNumber: lookup.improving_param ?? 0,
+        },
+        worse: {
+          tag: `Parametr ${lookup.worsening_param ?? '?'}`,
+          name: lookup.worsening_name ?? '',
+          paramNumber: lookup.worsening_param ?? 0,
+        },
+        principles: principleNums,
       },
-      groups: methods.map((method) => ({
-        method,
-        label: METHOD_LABELS[method],
-        candidates: candidates.filter((c) => c.method === method),
-      })),
+      groups,
       ranked,
-      winner: ranked[0],
-      candidateCount: candidates.length,
+      winner,
+      candidateCount: allCandidates.length,
     };
-
-    return new Promise((resolve) =>
-      setTimeout(() => resolve(trail), MOCK_DELAY_MS),
-    );
   }
 }

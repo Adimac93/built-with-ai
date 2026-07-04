@@ -23,6 +23,7 @@ export interface TrailCandidate {
 export interface TrailParameter {
   readonly tag: string;
   readonly name: string;
+  readonly paramNumber: number;
 }
 
 export interface TrailContradiction {

@@ -15,7 +15,7 @@ const PHASES = [
   'Krok 3/5 — generowanie kandydatów…',
   'Krok 4/5 — ewaluacja…',
 ];
-const PHASE_INTERVAL_MS = 350;
+const PHASE_INTERVAL_MS = 8000;
 
 @Component({
   selector: 'app-analysis-page',
@@ -59,7 +59,7 @@ export class AnalysisPage {
     try {
       const trail = await this.engine.solve(problem, this.evalMode());
       this.trail.set(trail);
-      this.status.set('Analiza zakończona · dane przykładowe (mock silnika)');
+      this.status.set('Analiza zakończona');
       setTimeout(() => this.resultsHeading().nativeElement.focus());
     } finally {
       clearInterval(timer);

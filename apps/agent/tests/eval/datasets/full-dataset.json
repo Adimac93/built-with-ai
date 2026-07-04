@@ -1,0 +1,134 @@
+{
+  "eval_cases": [
+    {
+      "eval_case_id": "problem4_oil_spills_sdg14",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Moving crude oil across oceans is only economical at scale, which is why the industry relies on very large tankers carrying enormous volumes in a single hull. When something goes wrong—a collision, grounding, or structural failure—the resulting spill can be catastrophic and extremely difficult to contain, devastating marine ecosystems and coastal economies for decades. Global energy and trade systems remain heavily dependent on this mode of transport.\n\nYour task: Propose a way to substantially reduce the risk and severity of oil spills from maritime transport.\nConstraint: This is ultimately about keeping the situation as-is transport-wise, but keeping marine life happy and safe."}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Must return full 5-step trail JSON. Contradiction should use Reliability (27) or Loss of substance (23) as improving param and Volume of stationary object (7) or Harmful effects (30) as worsening. TRIZ lookup must return ≥1 principle. ≥3 TRIZ candidates with trace_id prefixed triz-, ≥3 SCAMPER candidates with trace_id prefixed scamper-. All candidates evaluated against criteria including transport continuity. Winner chosen by argmax."}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "problem1_food_cold_chain_sdg12",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Fresh produce, dairy, and meat spoil rapidly during transport in developing regions because maintaining a continuous cold chain requires diesel-powered refrigerated trucks. These trucks are expensive to operate and maintain, emit greenhouse gases, and break down frequently in regions with poor road infrastructure. Without refrigeration, up to 40% of food is lost before it reaches consumers—worsening hunger and wasting the resources used to grow it.\n\nYour task: Propose a way to substantially reduce food loss during transport in regions with limited infrastructure.\nConstraint: The solution must work without reliable electricity grids or imported fuel, and must scale to smallholder farmers who cannot afford high capital costs."}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Must return full 5-step trail JSON. Contradiction should relate to preservation quality vs cost or energy dependence (e.g., params around Reliability/27, Loss of substance/23 vs Energy spent/19 or Object-generated harmful effects/30). TRIZ and SCAMPER candidates must address off-grid, low-cost food preservation. All 5 steps present, winner chosen by argmax."}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "problem2_clean_water_sdg6",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Over two billion people lack access to safely managed drinking water. The most common treatment method—chlorination—is inexpensive and kills most pathogens, but produces toxic disinfection byproducts (DBPs) that cause cancer with long-term exposure. More advanced filtration and UV treatment are safer but require stable electricity, trained operators, and costly membrane replacements that are inaccessible in low-income rural communities.\n\nYour task: Propose a method to provide safe drinking water at community scale in rural, low-income settings.\nConstraint: The solution must not require continuous electricity, must be operable without expert technicians, and must have consumable costs below $1 per 1,000 liters treated."}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Full 5-step trail required. Contradiction should involve pathogen removal effectiveness (Reliability/27 or Object-generated harmful effects/30) worsening against energy use (Energy spent/19) or adaptability/versatility (35). Candidates must address decentralized, low-tech water treatment. Winner chosen by argmax."}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "problem3_brick_kilns_sdg11",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Traditional fixed-chimney brick kilns in South and Southeast Asia fire billions of bricks annually using coal or biomass. They are a major source of black carbon, particulate matter, and CO2, causing severe respiratory disease in surrounding communities and contributing to regional climate forcing. Transitioning kilns to cleaner combustion (e.g., zigzag or vertical shaft kilns) significantly reduces emissions but requires capital investment that small operators cannot afford, and may temporarily reduce daily brick output during retrofitting.\n\nYour task: Propose a way to substantially reduce air pollution from brick production in low-income contexts.\nConstraint: Production volume must not decrease—brick demand in rapidly urbanizing regions is inelastic, and a supply shortage would halt affordable housing construction."}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Full 5-step trail required. Contradiction should relate to reducing harmful emissions (Object-generated harmful effects/30 or Loss of substance/23) while maintaining or improving productivity (Productivity/39) or power output (Power/21). Candidates must address affordable kiln improvements or alternative fuels. Winner chosen by argmax."}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "problem5_microplastics_sdg14",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Microplastics (particles < 5 mm) have infiltrated every marine ecosystem, from deep ocean trenches to Arctic sea ice. They enter via synthetic textile washing, tire erosion, and fragmentation of larger plastic waste. Marine organisms ingest them, causing physical blockage and toxin accumulation that travels up the food chain to humans. Wastewater treatment plants capture only 70–80% of microplastics—the remainder passes through and enters waterways.\n\nYour task: Propose a way to dramatically reduce the amount of microplastics entering marine environments.\nConstraint: The solution must address the source or capture point (not open-ocean cleanup, which is logistically intractable at this scale), and must be economically viable at municipal or regional scale."}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Full 5-step trail required. Contradiction should relate to capture efficiency or substance loss (Loss of substance/23, Reliability/27) vs volume or energy cost. Candidates address upstream microplastic reduction or improved filtration. Minimum 3 TRIZ and 3 SCAMPER candidates, all evaluated, winner by argmax."}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "problem6_ewaste_sdg12",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Electronic waste is the fastest-growing solid waste stream globally—over 50 million tonnes per year, less than 20% formally recycled. Consumer electronics are designed for performance and miniaturization, which requires bonding dissimilar materials (plastics, rare earth metals, glass, solder) in ways that make disassembly nearly impossible without destroying components. Informal e-waste recycling using open burning and acid leaching recovers some metals but releases highly toxic compounds into soil and air.\n\nYour task: Propose a way to dramatically increase the rate of safe, economically viable recovery of materials from consumer electronics.\nConstraint: The approach must be compatible with electronics already in the market—redesigning products is a 10-year horizon and cannot solve the current backlog of waste."}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Full 5-step trail required. Contradiction should relate to material recovery yield (Loss of substance/23 or Reliability/27) vs harmful side effects (Object-generated harmful effects/30) or manufacturability/adaptability. Candidates must address safe disassembly or material separation. Winner by argmax."}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "problem7_soil_degradation_sdg2",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Industrial agriculture feeds billions but is degrading the very soil it depends on. Synthetic nitrogen fertilizers boost short-term crop yields but acidify soil, deplete microbial biodiversity, and cause nitrogen runoff that creates algal blooms in adjacent waterways. Over decades, this reduces soil organic matter and water retention, lowering yields in a compounding cycle. Reducing fertilizer inputs immediately cuts yields, threatening food security.\n\nYour task: Propose a way to restore or maintain soil health in intensively farmed regions without reducing food output.\nConstraint: The solution must be adoptable by farmers within a single growing season and must not require a short-term yield reduction that would make it economically unviable for smallholder farmers."}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Full 5-step trail required. Contradiction should relate to yield/productivity (Productivity/39) vs soil or environmental degradation (Object-generated harmful effects/30 or Loss of substance/23). Candidates address soil restoration methods compatible with existing farming. Winner by argmax."}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "edge_garbled_input",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "asdf qwerty 123 ??? this is not a real problem xyzzy"}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Agent must not crash on garbled input. It should either return a coherent trail (attempting to interpret or defaulting to a generic contradiction) or return a structured error. Response must be valid JSON. No unhandled exception."}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "edge_minimal_input",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "pollution"}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Agent receives an extremely vague one-word input. It must attempt to interpret it as a solvable problem (picking a plausible domain such as air/water/soil pollution) and return a complete 5-step trail. Parameters must be in 1-39 range. Must not crash or return empty response."}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "edge_off_domain_generic",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "A busy urban intersection has a high rate of pedestrian accidents because drivers fail to notice pedestrians crossing. Installing more traffic lights increases congestion and travel time significantly. How can we substantially reduce pedestrian accidents without worsening traffic flow?"}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Agent handles a non-SDG engineering problem. Must identify contradiction (e.g. Safety/Reliability vs Speed or Productivity), perform TRIZ lookup, generate TRIZ and SCAMPER candidates, evaluate, and choose winner. Complete 5-step trail required."}]
+        }
+      }
+    }
+  ]
+}
