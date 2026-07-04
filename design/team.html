@@ -7,7 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="heureka.css"></head>
+<link rel="stylesheet" href="heureka.css">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+</head>
 <body>
 <a class="skip" href="#crew">Przejdź do listy zespołu</a>
 
@@ -18,55 +20,45 @@
       <div class="masthead__brand">Heureka<span>.</span></div>
       <nav class="nav" aria-label="Główna nawigacja">
         <a href="heureka.html">Analiza</a>
+        <a href="metody.html">Metody</a>
         <a href="team.html" aria-current="page">Zespół</a>
       </nav>
-      <div class="masthead__meta">ARK. 2/2 · REW. B<br>KARTA PERSONELU</div>
+      <div class="masthead__meta">ARK. 3/3 · REW. S+<br>KARTA PERSONELU</div>
     </header>
 
     <section aria-labelledby="team-h">
       <p class="eyebrow">Biuro konstrukcyjne</p>
       <h1 id="team-h">Zespół</h1>
-      <p class="lead">Czworo ludzi, jeden arkusz. Budujemy silnik, który myśli krokami — i każdy z tych kroków ktoś z nas trzyma w ryzach.</p>
+      <p class="lead">Troje ludzi, jeden arkusz. Budujemy silnik, który myśli krokami — i każdy z tych kroków ktoś z nas trzyma w ryzach.</p>
 
       <main class="crew" id="crew">
         <article class="person">
-          <p class="badge">Lider</p>
-          <div class="person__portrait" aria-hidden="true">FD</div>
+          <div class="person__portrait"><img src="img/AdmaM.jpeg" alt=""></div>
           <div class="person__body">
-            <p class="person__role">Full-stack · pierwszy kontakt</p>
-            <h2 class="person__name">Filip</h2>
+            <p class="person__role">Full-stack</p>
+            <h2 class="person__name">Adam Maciejczuk</h2>
             <p>Skleja silnik z interfejsem i pilnuje, żeby demo działało jedną komendą.</p>
-            <div class="person__tags"><span>pipeline</span><span>CLI</span><span>integracja</span></div>
+            <div class="person__tags"><span>pipeline</span><span>NestJS</span><span>integracja</span></div>
           </div>
         </article>
 
         <article class="person">
-          <div class="person__portrait" aria-hidden="true">AK</div>
+          <div class="person__portrait"><img src="img/AdamK.png" alt=""></div>
           <div class="person__body">
-            <p class="person__role">Frontend · design</p>
-            <h2 class="person__name">Ola</h2>
+            <p class="person__role">Frontend</p>
+            <h2 class="person__name">Adam Korwin</h2>
             <p>Odpowiada za arkusz, który właśnie oglądasz — od tokenów po dostępność z klawiatury.</p>
             <div class="person__tags"><span>Angular</span><span>ng-diagram</span><span>a11y</span></div>
           </div>
         </article>
 
         <article class="person">
-          <div class="person__portrait" aria-hidden="true">MW</div>
+          <div class="person__portrait"><img src="img/AntekP.jpg" alt=""></div>
           <div class="person__body">
-            <p class="person__role">Backend · LLM</p>
-            <h2 class="person__name">Marek</h2>
-            <p>Trzyma matrycę kontradykcji w kodzie, a model na krótkiej smyczy schematów.</p>
-            <div class="person__tags"><span>NestJS</span><span>TRIZ</span><span>prompty</span></div>
-          </div>
-        </article>
-
-        <article class="person">
-          <div class="person__portrait" aria-hidden="true">KZ</div>
-          <div class="person__body">
-            <p class="person__role">Evals · pitch</p>
-            <h2 class="person__name">Kasia</h2>
-            <p>Sprawdza, czy odpowiedzi są dobre, zanim powie o tym jury — metryki przed slajdami.</p>
-            <div class="person__tags"><span>scenariusze</span><span>metryki</span><span>demo</span></div>
+            <p class="person__role">LLM · evals</p>
+            <h2 class="person__name">Antoni Pszenica</h2>
+            <p>Trzyma model na krótkiej smyczy schematów, a jakość odpowiedzi mierzy metrykami, nie okiem.</p>
+            <div class="person__tags"><span>prompty</span><span>TRIZ</span><span>metryki</span></div>
           </div>
         </article>
       </main>
@@ -77,7 +69,7 @@
   <dl class="titleblock">
     <div><dt>Projekt</dt><dd>Heureka — inventive problem solving</dd></div>
     <div><dt>Arkusz</dt><dd>Karta personelu</dd></div>
-    <div><dt>Rewizja</dt><dd>B</dd></div>
+    <div><dt>Rewizja</dt><dd>S+</dd></div>
     <div><dt>Data</dt><dd>2026-07-04</dd></div>
   </dl>
 </div>
