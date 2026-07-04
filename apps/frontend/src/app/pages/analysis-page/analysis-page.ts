@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { PipelineDiagramComponent } from '../../components/pipeline-diagram/pipeline-diagram';
 import { AnalysisEngine } from '../../services/analysis-engine';
+import { DiagramHighlightService } from '../../services/diagram-highlight.service';
 import { EVAL_LABELS, EvalMode, Trail } from '../../models/trail.model';
 
 const PHASES = [
@@ -18,6 +19,14 @@ const PHASES = [
 ];
 const PHASE_INTERVAL_MS = 8000;
 
+const PHASE_NODES: string[][] = [
+  ['problem_normalizer'],
+  ['contradiction_extractor', 'triz_lookup', 'criteria_extractor'],
+  ['candidate_generators', 'triz_generator', 'scamper_generator'],
+  ['evaluator'],
+];
+const COMPLETION_NODES = ['choice_selector', 'trail_assembler'];
+
 @Component({
   selector: 'app-analysis-page',
   imports: [PipelineDiagramComponent],
@@ -26,6 +35,7 @@ const PHASE_INTERVAL_MS = 8000;
 })
 export class AnalysisPage {
   private readonly engine = inject(AnalysisEngine);
+  private readonly highlight = inject(DiagramHighlightService);
   private readonly resultsHeading =
     viewChild.required<ElementRef<HTMLHeadingElement>>('wynikiH');
   private readonly problemField =
@@ -53,19 +63,37 @@ export class AnalysisPage {
     this.running.set(true);
     this.trail.set(null);
 
-    let phase = 0;
+    this.highlight.reset();
+    this.highlight.setActive(PHASE_NODES[0]);
+    this.status.set(PHASES[0]);
+
+    let phaseIdx = 1;
     const timer = setInterval(() => {
-      if (phase < PHASES.length) this.status.set(PHASES[phase++]);
+      if (phaseIdx < PHASES.length) {
+        this.status.set(PHASES[phaseIdx]);
+        const next = PHASE_NODES[phaseIdx];
+        this.highlight.completePrevious(next);
+        this.highlight.setActive(next);
+        phaseIdx++;
+      }
     }, PHASE_INTERVAL_MS);
 
+    let success = false;
     try {
       const trail = await this.engine.solve(problem, this.evalMode());
+      success = true;
       this.trail.set(trail);
       this.status.set('Analiza zakończona');
-      setTimeout(() => this.resultsHeading().nativeElement.focus());
+      this.highlight.completePrevious(COMPLETION_NODES);
+      this.highlight.setActive(COMPLETION_NODES);
+      setTimeout(() => {
+        this.highlight.markDone(COMPLETION_NODES);
+        this.resultsHeading().nativeElement.focus();
+      }, 1500);
     } finally {
       clearInterval(timer);
       this.running.set(false);
+      if (!success) this.highlight.reset();
     }
   }
 }

@@ -3,26 +3,18 @@
    z motywem Material na stronach /users i /orders. */
 
 .heureka {
-  --paper: #f1f4ec;
-  --grid: #d6decb;
-  --ink: #1b2b21;
-  --graphite: #5a685a;
-  --card: #fafbf6;
-  --red: #c93a26;
-  --line: #8f9c8c;
-
   display: block;
   min-height: 100dvh;
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--ds-font-family-body);
   font-size: 1rem;
-  color: var(--ink);
+  color: var(--ds-color-content-primary);
   background:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
-    var(--paper);
-  background-size: 24px 24px;
-  line-height: 1.55;
-  padding: 24px;
+    linear-gradient(var(--ds-color-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ds-color-grid-line) 1px, transparent 1px),
+    var(--ds-color-bg-canvas);
+  background-size: var(--ds-grid-size-engineering) var(--ds-grid-size-engineering);
+  line-height: var(--ds-line-height-body);
+  padding: var(--ds-space-900);
 
   *,
   *::before,
@@ -35,30 +27,28 @@
   .skip {
     position: absolute;
     left: -999px;
-    top: 8px;
-    background: var(--ink);
-    color: var(--paper);
-    padding: 8px 16px;
+    top: var(--ds-space-300);
+    background: var(--ds-color-bg-selected);
+    color: var(--ds-color-content-inverse);
+    padding: var(--ds-space-300) var(--ds-space-600);
     z-index: 10;
   }
   .skip:focus {
-    left: 32px;
+    left: var(--ds-space-1100);
   }
 
   :focus-visible {
-    outline: 3px solid var(--red);
-    outline-offset: 2px;
+    outline: var(--ds-focus-outline);
+    outline-offset: var(--ds-space-50);
   }
 
   /* ── arkusz ── */
   .sheet {
     max-width: 1080px;
     margin: 0 auto;
-    background: var(--card);
-    border: 1.5px solid var(--ink);
-    box-shadow:
-      0 0 0 5px var(--card),
-      0 0 0 6.5px var(--ink);
+    background: var(--ds-color-bg-card);
+    border: var(--ds-border-default);
+    box-shadow: var(--ds-sheet-shadow);
   }
   .sheet__inner {
     padding: clamp(24px, 5vw, 64px);
@@ -437,7 +427,7 @@
     padding: 8px 14px;
   }
   .matrix b {
-    color: #f2b8ad;
+    color: var(--ds-color-content-inverse-accent);
     font-weight: 500;
   }
 
@@ -510,7 +500,7 @@
     margin-right: 10px;
   }
   .scores tr.win td {
-    background: #f6e8e4;
+    background: var(--ds-color-bg-score-win);
   }
   .score {
     font-family: 'IBM Plex Mono', monospace;
@@ -602,6 +592,13 @@
     background: var(--paper);
   }
 
+  .pipeline__error {
+    padding: var(--ds-space-600);
+    font-family: var(--ds-font-family-code);
+    font-size: var(--ds-font-size-400);
+    color: var(--ds-color-accent-danger);
+  }
+
   /* ── metodologia ── */
   .doc-section {
     display: block;
@@ -688,10 +685,10 @@
     height: 240px;
     overflow: hidden;
     background:
-      linear-gradient(var(--grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px),
-      var(--paper);
-    background-size: 24px 24px;
+      linear-gradient(var(--ds-color-grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--ds-color-grid-line) 1px, transparent 1px),
+      var(--ds-color-bg-canvas);
+    background-size: var(--ds-grid-size-engineering) var(--ds-grid-size-engineering);
     border-bottom: 1.5px solid var(--ink);
   }
   .person__portrait img {
