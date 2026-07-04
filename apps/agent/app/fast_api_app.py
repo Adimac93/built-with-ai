@@ -14,15 +14,19 @@
 
 import contextlib
 import os
+import uuid
 from collections.abc import AsyncIterator
 
 import google.auth
 from a2a.server.tasks import InMemoryTaskStore
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from google.adk.cli.fast_api import get_fast_api_app
 from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
 from google.cloud import logging as google_cloud_logging
+from google.genai import types as genai_types
+from pydantic import BaseModel
 
 from app.app_utils import services
 from app.app_utils.a2a import attach_a2a_routes
@@ -75,6 +79,47 @@ app: FastAPI = get_fast_api_app(
 )
 app.title = "agent"
 app.description = "API for interacting with the Agent agent"
+
+
+class SolveRequest(BaseModel):
+    problem: str
+
+
+@app.post("/solve")
+async def solve(request: SolveRequest) -> dict:
+    """Run the inventive problem solver and return the 5-step reasoning trail."""
+    from app.agent import app as adk_app
+    from app.agent import root_agent
+
+    session_service = InMemorySessionService()
+    runner = Runner(
+        agent=root_agent,
+        app_name=adk_app.name,
+        session_service=session_service,
+    )
+
+    user_id = "api_user"
+    session_id = str(uuid.uuid4())
+    await session_service.create_session(
+        app_name=adk_app.name, user_id=user_id, session_id=session_id
+    )
+
+    message = genai_types.Content(
+        role="user",
+        parts=[genai_types.Part.from_text(text=request.problem)],
+    )
+    async for _ in runner.run_async(
+        user_id=user_id, session_id=session_id, new_message=message
+    ):
+        pass
+
+    session = await session_service.get_session(
+        app_name=adk_app.name, user_id=user_id, session_id=session_id
+    )
+    trail = session.state.get("trail") if session else None
+    if trail is None:
+        raise HTTPException(status_code=500, detail="Agent produced no trail")
+    return trail
 
 
 @app.post("/feedback")

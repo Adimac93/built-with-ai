@@ -6,7 +6,7 @@ from collections.abc import AsyncGenerator
 from google.adk.agents import Agent, BaseAgent, ParallelAgent, SequentialAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.apps import App
-from google.adk.events import Event
+from google.adk.events import Event, EventActions
 from google.genai import types as genai_types
 
 from .schemas import (
@@ -321,10 +321,9 @@ class TrailAssemblerAgent(BaseAgent):
             "step4_evaluation": s.get("evaluation"),
             "step5_choice": s.get("choice"),
         }
-        ctx.session.state["trail"] = trail
-
         yield Event(
             author=self.name,
+            actions=EventActions(state_delta={"trail": trail}),
             content=genai_types.Content(
                 parts=[
                     genai_types.Part(

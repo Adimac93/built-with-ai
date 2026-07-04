@@ -1,0 +1,103 @@
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: built-with-ai-gdg-wroclaw
+  REGION: us-central1
+  # The Workload Identity Provider will be output by our setup script
+  # We will fill this in dynamically after running the script, but for now we put a placeholder
+  WORKLOAD_IDENTITY_PROVIDER: 'projects/1062481454649/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider'
+  SERVICE_ACCOUNT: 'github-actions-sa@built-with-ai-gdg-wroclaw.iam.gserviceaccount.com'
+
+jobs:
+  deploy-api:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write' # Required for Workload Identity Federation
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker --quiet
+
+      - name: Build API with Nx
+        run: npx nx build api
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build --platform linux/amd64 -t gcr.io/${{ env.PROJECT_ID }}/api:${{ github.sha }} -t gcr.io/${{ env.PROJECT_ID }}/api:latest -f apps/api/Dockerfile .
+          docker push gcr.io/${{ env.PROJECT_ID }}/api --all-tags
+
+      - name: Deploy API to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: api
+          image: gcr.io/${{ env.PROJECT_ID }}/api:${{ github.sha }}
+          region: ${{ env.REGION }}
+          flags: '--allow-unauthenticated'
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker --quiet
+
+      - name: Build Frontend with Nx
+        run: npx nx build frontend --configuration production
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build --platform linux/amd64 -t gcr.io/${{ env.PROJECT_ID }}/frontend:${{ github.sha }} -t gcr.io/${{ env.PROJECT_ID }}/frontend:latest -f apps/frontend/Dockerfile .
+          docker push gcr.io/${{ env.PROJECT_ID }}/frontend --all-tags
+
+      - name: Deploy Frontend to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: frontend
+          image: gcr.io/${{ env.PROJECT_ID }}/frontend:${{ github.sha }}
+          region: ${{ env.REGION }}
+          flags: '--allow-unauthenticated'

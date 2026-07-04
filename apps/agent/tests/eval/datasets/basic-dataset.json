@@ -6,7 +6,12 @@
         "role": "user",
         "parts": [{"text": "Moving crude oil across oceans is only economical at scale, which is why the industry relies on very large tankers carrying enormous volumes in a single hull. When something goes wrong—a collision, grounding, or structural failure—the resulting spill can be catastrophic and extremely difficult to contain, devastating marine ecosystems and coastal economies for decades. Global energy and trade systems remain heavily dependent on this mode of transport.\n\nYour task: Propose a way to substantially reduce the risk and severity of oil spills from maritime transport.\nConstraint: This is ultimately about keeping the situation as-is transport-wise, but keeping marine life happy and safe."}]
       },
-      "reference": "The agent must return a full 5-step reasoning trail as JSON. The trail must contain: (1) a normalized problem statement, (2) a TRIZ technical contradiction with improving and worsening parameter numbers in range 1-39, (3) a TRIZ lookup result with at least 1 inventive principle, (4) at least 3 TRIZ candidates and at least 3 SCAMPER candidates, each with trace_id, (5) evaluations covering the criterion 'transport continuity preserved', (6) a winner chosen by the highest total score. The contradiction should relate to Reliability (27) or Loss of substance (23) worsening against Volume (7) or Quantity (26)."
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "The agent must return a full 5-step reasoning trail as JSON. The trail must contain: (1) a normalized problem statement, (2) a TRIZ technical contradiction with improving and worsening parameter numbers in range 1-39, (3) a TRIZ lookup result with at least 1 inventive principle, (4) at least 3 TRIZ candidates and at least 3 SCAMPER candidates each with trace_id, (5) evaluations covering the criterion transport continuity preserved, (6) a winner chosen by the highest total score. The contradiction should relate to Reliability (27) or Loss of substance (23) worsening against Volume (7) or Quantity (26)."}]
+        }
+      }
     },
     {
       "eval_case_id": "garbled_input_edge_case",
@@ -14,7 +19,12 @@
         "role": "user",
         "parts": [{"text": "asdf qwerty 123 ??? this is not a real problem xyzzy"}]
       },
-      "reference": "The agent should handle garbled input gracefully. It must NOT crash. It may attempt to extract a contradiction or return a clear error message. The response should be coherent."
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "The agent should handle garbled input gracefully. It must NOT crash. It may attempt to extract a contradiction or return a clear error message. The response should be coherent."}]
+        }
+      }
     },
     {
       "eval_case_id": "pedestrian_safety_generic",
@@ -22,7 +32,12 @@
         "role": "user",
         "parts": [{"text": "A busy urban intersection has a high rate of pedestrian accidents because drivers fail to notice pedestrians crossing. Installing more traffic lights increases congestion and travel time significantly. How can we substantially reduce pedestrian accidents without worsening traffic flow?"}]
       },
-      "reference": "Agent must handle a problem outside the hackathon list. It should identify a contradiction (e.g., Safety/Reliability vs Speed or Productivity), perform TRIZ lookup, generate TRIZ and SCAMPER candidates, evaluate, and choose a winner. The trail must be complete with all 5 steps."
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "Agent must handle a problem outside the hackathon list. It should identify a contradiction (e.g. Safety/Reliability vs Speed or Productivity), perform TRIZ lookup, generate TRIZ and SCAMPER candidates, evaluate, and choose a winner. The trail must be complete with all 5 steps."}]
+        }
+      }
     }
   ]
 }

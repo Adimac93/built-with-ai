@@ -105,12 +105,26 @@ def _structural_score(trail: dict | None) -> dict:
     return {"structural_score": max(0, score), "issues": issues}
 
 
+def _response_text(instance: dict) -> str:
+    """Extract plain text from the eval instance response (message dict or str)."""
+    raw = instance.get("response", "")
+    if isinstance(raw, dict):
+        parts = raw.get("parts") or []
+        return parts[0].get("text", "") if parts else ""
+    return str(raw) if raw else ""
+
+
 def evaluate(instance):
-    response = instance.get("response", "")
+    response = _response_text(instance)
     trail = _extract_trail(response)
     structural = _structural_score(trail)
 
-    reference = instance.get("reference", "")
+    _ref = instance.get("reference") or {}
+    reference = (
+        _ref.get("response", {}).get("parts", [{}])[0].get("text", "")
+        if isinstance(_ref, dict)
+        else str(_ref)
+    )
     prompt = (
         "You are an expert evaluator for an Inventive Problem Solving AI system. "
         "Grade the agent's response on a 1-5 scale (1=poor, 5=excellent) for: "
