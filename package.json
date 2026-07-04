@@ -7,12 +7,7 @@
     "start:frontend": "npx nx serve frontend",
     "start": "concurrently \"npm run start:api\" \"npm run start:frontend\"",
     "lint:all": "nx run-many --target=lint --all",
-    "format": "npx nx format:write",
-    "start:fake-api": "npx json-server --watch json-server/db.json --port 3004",
-    "start:fake": "concurrently \"npm run start:fake-api\" \"npm run start:frontend\"",
-    "start:db": "docker compose -f docker/docker-compose.yml up -d",
-    "stop:db": "docker compose -f docker/docker-compose.yml down",
-    "restart:db": "docker compose -f docker/docker-compose.yml down && docker compose -f docker/docker-compose.yml up -d"
+    "format": "npx nx format:write"
   },
   "private": true,
   "dependencies": {
@@ -32,7 +27,6 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "dotenv": "^17.4.2",
-    "json-server": "^1.0.0-beta.15",
     "ng-diagram": "^1.2.4",
     "pg": "^8.22.0",
     "pg-hstore": "^2.3.4",

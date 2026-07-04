@@ -6,15 +6,14 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { appRoutes } from './app.routes';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { AppConfig, ConfigProvider } from './config/config-provider';
-import { appInterceptor } from './config/app-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(appRoutes),
-    provideHttpClient(withInterceptors([appInterceptor])),
+    provideHttpClient(),
     provideAppInitializer(async () => {
       const configProvider = inject(ConfigProvider);
       const response = await fetch('/config.json');
