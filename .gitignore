@@ -46,3 +46,7 @@ Thumbs.db
 .angular
 
 .nx/polygraph
+
+.docker/
+
+.env
