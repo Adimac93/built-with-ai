@@ -8,6 +8,7 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { filter, map } from 'rxjs';
+import { AccessibilityService } from '../../services/accessibility.service';
 
 interface SheetMeta {
   readonly ark: string;
@@ -43,6 +44,7 @@ const DEFAULT_META: SheetMeta = {
 })
 export class HeurekaLayout {
   private readonly router = inject(Router);
+  protected readonly a11y = inject(AccessibilityService);
 
   protected readonly today = new Date().toISOString().slice(0, 10);
   protected readonly meta = toSignal(

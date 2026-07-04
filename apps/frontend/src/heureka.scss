@@ -107,6 +107,68 @@
     text-align: right;
   }
 
+  /* ── kontrolki dostępności ── */
+  .a11y {
+    display: inline-flex;
+    align-items: stretch;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .a11y__group {
+    display: inline-flex;
+    align-items: stretch;
+    gap: 0;
+  }
+  .a11y__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: var(--card);
+    border: 1.5px solid var(--ink);
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+  .a11y__btn:hover:not([disabled]) {
+    background: var(--paper);
+  }
+  .a11y__btn--on {
+    background: var(--ink);
+    color: var(--card);
+  }
+  /* Keep active buttons legible on hover — the base hover swaps only the
+     background, which would hide the light label on a light surface. */
+  .a11y__btn--on:hover:not([disabled]) {
+    background: var(--red);
+    color: #ffffff;
+  }
+  .a11y__btn--icon {
+    padding: 6px 10px;
+  }
+  .a11y__group .a11y__btn + .a11y__level,
+  .a11y__group .a11y__level + .a11y__btn {
+    border-left-width: 0;
+  }
+  .a11y__btn[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .a11y__level {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--graphite);
+    background: var(--card);
+    border: 1.5px solid var(--ink);
+  }
+
   /* ── hero + formularz ── */
   .eyebrow {
     font-family: 'IBM Plex Mono', monospace;

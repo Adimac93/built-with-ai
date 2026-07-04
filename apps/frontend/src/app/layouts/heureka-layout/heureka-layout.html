@@ -19,6 +19,53 @@
           >Zespół</a
         >
       </nav>
+      <div
+        class="a11y"
+        role="group"
+        aria-label="Ustawienia dostępności"
+      >
+        <button
+          type="button"
+          class="a11y__btn"
+          [class.a11y__btn--on]="a11y.darkMode()"
+          [attr.aria-pressed]="a11y.darkMode()"
+          (click)="a11y.toggleDark()"
+        >
+          <span aria-hidden="true">☾</span> Ciemny
+        </button>
+        <button
+          type="button"
+          class="a11y__btn"
+          [class.a11y__btn--on]="a11y.highContrast()"
+          [attr.aria-pressed]="a11y.highContrast()"
+          (click)="a11y.toggleContrast()"
+        >
+          <span aria-hidden="true">◐</span> Kontrast
+        </button>
+        <div class="a11y__group" role="group" aria-label="Rozmiar tekstu">
+          <button
+            type="button"
+            class="a11y__btn a11y__btn--icon"
+            (click)="a11y.shrinkText()"
+            [disabled]="!a11y.canShrink()"
+            aria-label="Zmniejsz tekst"
+          >
+            A<span aria-hidden="true">−</span>
+          </button>
+          <span class="a11y__level" aria-live="polite">
+            {{ a11y.fontStep() }}/{{ a11y.fontStepCount }}
+          </span>
+          <button
+            type="button"
+            class="a11y__btn a11y__btn--icon"
+            (click)="a11y.enlargeText()"
+            [disabled]="!a11y.canEnlarge()"
+            aria-label="Powiększ tekst"
+          >
+            A<span aria-hidden="true">+</span>
+          </button>
+        </div>
+      </div>
       <p class="masthead__meta">
         {{ meta().ark }} · REW. S+<br />{{ meta().label }}
       </p>

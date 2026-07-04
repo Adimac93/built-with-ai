@@ -133,3 +133,61 @@
   --red: var(--ds-color-accent-danger);
   --line: var(--ds-color-border-muted);
 }
+
+/* High-contrast accessibility mode — toggled via .a11y-contrast on <html>.
+   Overrides the Heureka semantic tokens so every alias above inherits the
+   stronger palette (pure black/white, solid borders, no grid noise). */
+.a11y-contrast .heureka {
+  --ds-color-bg-canvas: #ffffff;
+  --ds-color-bg-card: #ffffff;
+  --ds-color-bg-subtle: #ffffff;
+  --ds-color-bg-score-win: #ffffff;
+  --ds-color-grid-line: transparent;
+  --ds-color-content-primary: #000000;
+  --ds-color-content-secondary: #000000;
+  --ds-color-content-inverse: #ffffff;
+  --ds-color-border-strong: #000000;
+  --ds-color-border-muted: #000000;
+  --ds-color-accent-danger: #b3120b;
+  --ds-color-focus-ring: #b3120b;
+}
+
+/* Dark mode — reversed palette, toggled via .a11y-dark on <html>.
+   Overrides the same semantic tokens so aliases + diagram nodes follow. */
+html.a11y-dark {
+  color-scheme: dark;
+  background: #14201a;
+}
+.a11y-dark .heureka {
+  --ds-color-bg-canvas: #14201a;
+  --ds-color-bg-card: #1b2b21;
+  --ds-color-bg-subtle: #1b2b21;
+  --ds-color-bg-score-win: #2e1a15;
+  --ds-color-grid-line: #24352b;
+  --ds-color-content-primary: #f1f4ec;
+  --ds-color-content-secondary: #b9c4b5;
+  --ds-color-content-inverse: #14201a;
+  --ds-color-content-inverse-accent: #f2b8ad;
+  --ds-color-border-strong: #e8ece1;
+  --ds-color-border-muted: #6f7d6d;
+  --ds-color-bg-selected: #f1f4ec;
+  --ds-color-accent-danger: #f2705a;
+  --ds-color-focus-ring: #f2705a;
+}
+
+/* Dark + high contrast — pure black/white inversion. */
+.a11y-dark.a11y-contrast .heureka {
+  --ds-color-bg-canvas: #000000;
+  --ds-color-bg-card: #000000;
+  --ds-color-bg-subtle: #000000;
+  --ds-color-bg-score-win: #000000;
+  --ds-color-grid-line: transparent;
+  --ds-color-content-primary: #ffffff;
+  --ds-color-content-secondary: #ffffff;
+  --ds-color-content-inverse: #000000;
+  --ds-color-border-strong: #ffffff;
+  --ds-color-border-muted: #ffffff;
+  --ds-color-bg-selected: #ffffff;
+  --ds-color-accent-danger: #ff8a75;
+  --ds-color-focus-ring: #ff8a75;
+}
