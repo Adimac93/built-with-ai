@@ -1,0 +1,63 @@
+@let f = userForm;
+
+<mat-card appearance="outlined" class="form-card">
+  <mat-card-header class="form-header">
+    <div mat-card-avatar class="form-avatar">
+      <mat-icon>{{ isEdit() ? 'edit' : 'person_add' }}</mat-icon>
+    </div>
+    <mat-card-title>{{ isEdit() ? 'Edit user' : 'New user' }}</mat-card-title>
+    <mat-card-subtitle>
+      {{ isEdit() ? 'Update user details' : 'Fill in the user details' }}
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <form (submit)="handleSubmit($event)" class="user-form">
+    <mat-card-content class="form-fields">
+      <div class="row">
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput type="text" [formField]="f.name" />
+          @if (f.name().touched() && !f.name().valid()) {
+          <mat-error>{{ f.name().errors()[0]?.message }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Surname</mat-label>
+          <input matInput type="text" [formField]="f.surname" />
+          @if (f.surname().touched() && !f.surname().valid()) {
+          <mat-error>{{ f.surname().errors()[0]?.message }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Birth year</mat-label>
+        <input matInput type="number" [formField]="f.birthYear" />
+        @if (f.birthYear().touched() && !f.birthYear().valid()) {
+        <mat-error>{{ f.birthYear().errors()[0]?.message }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" [formField]="f.email" />
+        <mat-icon matSuffix>email</mat-icon>
+        @if (f.email().touched() && !f.email().valid()) {
+        <mat-error>{{ f.email().errors()[0]?.message }}</mat-error>
+        }
+      </mat-form-field>
+    </mat-card-content>
+
+    <mat-card-actions align="end" class="form-actions">
+      <button matButton="outlined" type="button" (click)="handleCancel()">
+        <mat-icon>close</mat-icon>
+        Cancel
+      </button>
+      <button matButton="filled" type="submit" [disabled]="!f().valid()">
+        <mat-icon>{{ isEdit() ? 'save' : 'check' }}</mat-icon>
+        {{ isEdit() ? 'Update' : 'Create' }}
+      </button>
+    </mat-card-actions>
+  </form>
+</mat-card>
