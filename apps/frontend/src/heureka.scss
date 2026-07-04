@@ -140,12 +140,55 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
     border-bottom: 1px solid var(--ink);
     padding: 10px 16px;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.72rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
+  }
+  .form__head-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .mic-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 32px;
+    border: 1.5px solid var(--ink);
+    background: var(--card);
+    color: var(--ink);
+    padding: 6px 10px;
+    font: inherit;
+    cursor: pointer;
+  }
+  .mic-btn:hover {
+    background: var(--paper);
+  }
+  .mic-btn--recording {
+    background: var(--red);
+    border-color: var(--red);
+    color: var(--card);
+  }
+  .mic-btn[disabled] {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .mic-btn .material-icons {
+    font-family: 'Material Icons';
+    font-size: 1rem;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: none;
   }
   .form label {
     font-weight: 500;
@@ -165,6 +208,13 @@
   .form textarea::placeholder {
     color: var(--graphite);
     opacity: 0.85;
+  }
+  .form__speech-status {
+    border-top: 1px dashed var(--line);
+    padding: 10px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.76rem;
+    color: var(--graphite);
   }
 
   /* opcje analizy */
@@ -597,6 +647,69 @@
     font-family: var(--ds-font-family-code);
     font-size: var(--ds-font-size-400);
     color: var(--ds-color-accent-danger);
+  }
+
+  /* ── popup pipeline w trakcie analizy ── */
+  .pipeline-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(16px, 4vw, 48px);
+    background: color-mix(in srgb, var(--ink) 55%, transparent);
+    backdrop-filter: blur(2px);
+    animation: pipeline-modal-in 0.18s ease-out;
+  }
+
+  @keyframes pipeline-modal-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .pipeline-modal__panel {
+    display: flex;
+    flex-direction: column;
+    width: min(1100px, 100%);
+    height: min(72vh, 100%);
+    border: 1.5px solid var(--ink);
+    background: var(--paper);
+    box-shadow: 0 18px 48px color-mix(in srgb, var(--ink) 45%, transparent);
+  }
+
+  .pipeline-modal__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 11px 20px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--card);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .pipeline-modal__title {
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .pipeline-modal__status {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--graphite);
+  }
+
+  .pipeline-modal__body {
+    flex: 1;
+    min-height: 0;
+
+    app-pipeline-diagram {
+      display: flex;
+      height: 100%;
+    }
   }
 
   /* ── metodologia ── */

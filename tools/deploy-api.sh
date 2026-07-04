@@ -3,15 +3,16 @@ set -euo pipefail
 
 PROJECT_ID="${PROJECT_ID:-built-with-ai-gdg-wroclaw}"
 REGION="${REGION:-us-central1}"
+AGENT_REGION="${AGENT_REGION:-us-east1}"
 API_SERVICE="${API_SERVICE:-api}"
 AGENT_SERVICE="${AGENT_SERVICE:-agent}"
 IMAGE="gcr.io/${PROJECT_ID}/${API_SERVICE}"
 
-echo "Resolving ${AGENT_SERVICE} Cloud Run URL in ${PROJECT_ID}/${REGION}..."
+echo "Resolving ${AGENT_SERVICE} Cloud Run URL in ${PROJECT_ID}/${AGENT_REGION}..."
 AGENT_URL="$(
   gcloud run services describe "${AGENT_SERVICE}" \
     --platform managed \
-    --region "${REGION}" \
+    --region "${AGENT_REGION}" \
     --project "${PROJECT_ID}" \
     --format='value(status.url)'
 )"

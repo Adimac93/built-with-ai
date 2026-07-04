@@ -10,17 +10,45 @@
   <form class="form" (submit)="run($event)" novalidate>
     <div class="form__head">
       <label for="problem">Zgłoszenie problemu</label>
-      <span aria-hidden="true">Pole 01</span>
+      <div class="form__head-actions">
+        <button
+          class="mic-btn"
+          type="button"
+          [class.mic-btn--recording]="recording()"
+          [attr.aria-pressed]="recording()"
+          [disabled]="running() || transcribing() || !speechInputAvailable()"
+          (click)="toggleRecording()"
+        >
+          <span class="material-icons" aria-hidden="true">{{
+            recording() ? 'stop' : 'mic'
+          }}</span>
+          <span>
+            @if (recording()) {
+              Zatrzymaj
+            } @else if (transcribing()) {
+              Transkrypcja
+            } @else {
+              Mikrofon
+            }
+          </span>
+        </button>
+        <span aria-hidden="true">Pole 01</span>
+      </div>
     </div>
     <textarea
       #problemField
       id="problem"
       name="problem"
-      aria-describedby="form-error problem-hint"
+      aria-describedby="form-error speech-status problem-hint"
       placeholder="Opisz problem: co ma działać lepiej, w jakich warunkach występuje trudność i czego nie wolno zmienić…"
       [value]="problem()"
       (input)="problem.set(problemField.value)"
     ></textarea>
+    @if (speechStatus()) {
+      <p class="form__speech-status" id="speech-status" role="status">
+        {{ speechStatus() }}
+      </p>
+    }
 
     <div class="form__options">
       <div class="opt">
@@ -87,7 +115,7 @@
 </section>
 
 <section class="pipeline-section" aria-labelledby="pipeline-h">
-  <details class="pipeline__drawer">
+  <details class="pipeline__drawer" open>
     <summary class="pipeline__trigger">
       <span id="pipeline-h">Architektura pipeline</span>
       <span class="pipeline__meta">SequentialAgent · 8 węzłów · 1 gałąź równoległa</span>
@@ -103,6 +131,20 @@
     </div>
   </details>
 </section>
+
+@if (processing()) {
+  <div class="pipeline-modal" role="dialog" aria-modal="true" aria-labelledby="pipeline-modal-h">
+    <div class="pipeline-modal__panel">
+      <div class="pipeline-modal__head">
+        <span id="pipeline-modal-h" class="pipeline-modal__title">Pipeline w trakcie</span>
+        <span class="pipeline-modal__status" role="status">{{ status() }}</span>
+      </div>
+      <div class="pipeline-modal__body">
+        <app-pipeline-diagram [focusMode]="true" />
+      </div>
+    </div>
+  </div>
+}
 
 <section class="results" aria-labelledby="wyniki-h">
   <div class="results__head">

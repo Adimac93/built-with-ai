@@ -1,14 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, effect, inject, input, untracked } from '@angular/core';
 import {
   NgDiagramBackgroundComponent,
   NgDiagramComponent,
   NgDiagramMarkerComponent,
   NgDiagramNodeTemplateMap,
+  NgDiagramService,
+  NgDiagramViewportService,
   initializeModel,
   provideNgDiagram,
 } from 'ng-diagram';
 import { AgentNodeComponent } from './agent-node/agent-node';
 import { ParallelGroupComponent } from './parallel-group/parallel-group';
+import { DiagramHighlightService } from '../../services/diagram-highlight.service';
 
 // Layout constants
 const NW = 180;  // node width
@@ -16,8 +19,13 @@ const NH = 120;  // node height
 const GAP = 70;  // horizontal gap between nodes
 const CY = 200;  // vertical center
 const GW = 220;  // group width
-const GH = 310;  // group height
+const GHEAD = 64;  // reserved space for the group header (title + type)
+const GCHILD_GAP = 18;  // vertical gap between stacked children
+const GPAD = 16;  // group bottom padding
+const GH = GHEAD + NH + GCHILD_GAP + NH + GPAD;  // group height fits header + 2 children
 const GY = CY - GH / 2;  // group top y
+const GCHILD1_Y = GY + GHEAD;  // first child top
+const GCHILD2_Y = GCHILD1_Y + NH + GCHILD_GAP;  // second child top
 
 // x position for sequential slot (0-based)
 function sx(slot: number): number {
@@ -61,6 +69,41 @@ const GX = sx(4);
   `,
 })
 export class PipelineDiagramComponent {
+  /** When true, the viewport tracks the highlighted step (used by the popup). */
+  readonly focusMode = input(false);
+
+  private readonly highlight = inject(DiagramHighlightService);
+  private readonly viewport = inject(NgDiagramViewportService);
+  private readonly diagram = inject(NgDiagramService);
+
+  private framed = false;
+
+  constructor() {
+    // Frame the whole pipeline once — guarded so the isInitialized re-toggles
+    // that autoSize measurement triggers don't re-fit and fight the follow pan.
+    effect(() => {
+      if (!this.focusMode() || !this.diagram.isInitialized()) return;
+      untracked(() => {
+        if (this.framed) return;
+        this.framed = true;
+        this.viewport.zoomToFit({ padding: 40 });
+        const focus = this.highlight.focus();
+        if (focus) this.viewport.centerOnNode(focus.nodeId);
+      });
+    });
+
+    // Follow the active step. Depends ONLY on focus() — isInitialized is read
+    // untracked so init re-toggles can't storm-fire centerOnNode (the jitter).
+    effect(() => {
+      const focus = this.highlight.focus();
+      if (!focus || !this.focusMode()) return;
+      untracked(() => {
+        if (!this.diagram.isInitialized()) return;
+        this.viewport.centerOnNode(focus.nodeId);
+      });
+    });
+  }
+
   readonly nodeTemplateMap = new NgDiagramNodeTemplateMap([
     ['agent', AgentNodeComponent],
     ['parallel-group', ParallelGroupComponent],
@@ -184,7 +227,7 @@ Return JSON with generic_criteria (list of 3 strings) and problem_specific_crite
         id: 'triz_generator',
         type: 'agent',
         groupId: 'candidate_generators',
-        position: { x: GX + 20, y: GY + 55 },
+        position: { x: GX + 20, y: GCHILD1_Y },
         size: { width: NW, height: NH },
         autoSize: true,
         data: {
@@ -211,7 +254,7 @@ Return JSON with a "candidates" list. Each candidate: principle_number (int), pr
         id: 'scamper_generator',
         type: 'agent',
         groupId: 'candidate_generators',
-        position: { x: GX + 20, y: GY + 55 + NH + 20 },
+        position: { x: GX + 20, y: GCHILD2_Y },
         size: { width: NW, height: NH },
         autoSize: true,
         data: {

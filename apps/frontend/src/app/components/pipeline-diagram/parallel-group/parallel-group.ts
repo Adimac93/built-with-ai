@@ -72,6 +72,9 @@ export interface ParallelGroupData {
       font-size: 0.78rem;
       font-weight: 600;
       color: var(--ds-color-content-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .par-group--active {

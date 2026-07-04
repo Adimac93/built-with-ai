@@ -53,3 +53,9 @@ variable "app_sa_roles" {
     "roles/serviceusage.serviceUsageConsumer",
   ]
 }
+
+variable "allow_unauthenticated_invocations" {
+  description = "Grant allUsers the run.invoker role so the agent Cloud Run service accepts unauthenticated calls (the api service calls /solve directly). Set to false to require authenticated invocations."
+  type        = bool
+  default     = true
+}
