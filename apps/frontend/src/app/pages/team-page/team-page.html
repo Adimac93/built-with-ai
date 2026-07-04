@@ -9,7 +9,7 @@
   @for (member of members; track member.name) {
     <article class="person">
       <div class="person__portrait">
-        <img [src]="member.photo" alt="" />
+        <img [src]="member.photo" [alt]="member.photoAlt" />
       </div>
       <div class="person__body">
         <p class="person__role">{{ member.role }}</p>

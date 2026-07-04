@@ -52,6 +52,7 @@ export class AnalysisPage {
     this.trail.set(null);
 
     let phase = 0;
+    this.status.set(PHASES[phase++]);
     const timer = setInterval(() => {
       if (phase < PHASES.length) this.status.set(PHASES[phase++]);
     }, PHASE_INTERVAL_MS);
@@ -61,6 +62,11 @@ export class AnalysisPage {
       this.trail.set(trail);
       this.status.set('Analiza zakończona');
       setTimeout(() => this.resultsHeading().nativeElement.focus());
+    } catch {
+      this.status.set('');
+      this.error.set(
+        'Nie udało się połączyć z silnikiem analizy. Sprawdź, czy API działa, i spróbuj ponownie.',
+      );
     } finally {
       clearInterval(timer);
       this.running.set(false);
