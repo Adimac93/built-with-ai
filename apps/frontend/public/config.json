@@ -1,4 +1,4 @@
 {
-  "apiUrl": "http://localhost:3000/api",
+  "apiUrl": "https://api-1062481454649.us-central1.run.app/api",
   "fakeApiUrl": "http://localhost:3004"
 }

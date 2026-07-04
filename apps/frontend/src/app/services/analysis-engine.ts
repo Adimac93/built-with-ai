@@ -3,7 +3,6 @@ import {
   EvalMode,
   GenerationMethod,
   METHOD_LABELS,
-  SecondMethod,
   Trail,
   TrailCandidate,
 } from '../models/trail.model';
@@ -40,26 +39,11 @@ const MOCK_CANDIDATES: Record<
       'Zaadaptuj sprawdzone rozwiązanie z innej branży lub kontekstu do warunków zgłoszonego problemu.',
     ],
   ],
-  morph: [
-    [
-      'Kombinacja: bariera × adaptacyjny × system',
-      'Wariant działający na poziomie całego systemu: adaptacyjna bariera reagująca na warunki zamiast stałego zabezpieczenia.',
-    ],
-    [
-      'Kombinacja: źródło × pasywny × element',
-      'Wariant pasywny przy źródle problemu: konstrukcyjna zmiana pojedynczego elementu eliminująca przyczynę.',
-    ],
-    [
-      'Kombinacja: skutek × aktywny × otoczenie',
-      'Wariant aktywny w otoczeniu: system wykrywa skutek i uruchamia przeciwdziałanie, zanim się rozprzestrzeni.',
-    ],
-  ],
 };
 
 const CANDIDATE_PREFIX: Record<GenerationMethod, string> = {
   triz: 'T',
   scamper: 'S',
-  morph: 'M',
 };
 
 const MOCK_SCORES = [84, 71, 77, 63, 69, 58] as const;
@@ -67,19 +51,15 @@ const MOCK_DELAY_MS = 1800;
 
 /**
  * Silnik analizy. Zgodnie z zadaniem jeden przebieg generuje kandydatów
- * DWIEMA metodami: zawsze TRIZ (matryca kontradykcji) + drugą wybraną,
- * a ewaluacja i wybór obejmują wszystkich kandydatów razem.
+ * dwiema metodami — TRIZ (matryca kontradykcji) + SCAMPER — a ewaluacja
+ * i wybór obejmują wszystkich kandydatów razem.
  * Na razie zwraca dane przykładowe (mock) — docelowo ten serwis woła
  * REST API NestJS; komponenty nie wymagają wtedy żadnych zmian.
  */
 @Injectable({ providedIn: 'root' })
 export class AnalysisEngine {
-  solve(
-    problem: string,
-    secondMethod: SecondMethod,
-    evalMode: EvalMode,
-  ): Promise<Trail> {
-    const methods: readonly GenerationMethod[] = ['triz', secondMethod];
+  solve(problem: string, evalMode: EvalMode): Promise<Trail> {
+    const methods: readonly GenerationMethod[] = ['triz', 'scamper'];
     const candidates: TrailCandidate[] = methods.flatMap((method, m) =>
       MOCK_CANDIDATES[method].map(([source, description], i) => ({
         method,
@@ -93,7 +73,6 @@ export class AnalysisEngine {
 
     const trail: Trail = {
       problem,
-      secondMethod,
       evalMode,
       contradiction: {
         better: { tag: 'Parametr 27', name: 'Niezawodność' },

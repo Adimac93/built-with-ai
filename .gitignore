@@ -46,6 +46,11 @@ Thumbs.db
 .angular
 
 .nx/polygraph
+
+.docker/
+
+.env
+
 .playwright-mcp/
 node_modules/
 .env

@@ -1,12 +1,9 @@
-export type GenerationMethod = 'triz' | 'scamper' | 'morph';
-/** Druga metoda generowania — TRIZ jest zawsze włączony (wymóg zadania). */
-export type SecondMethod = Exclude<GenerationMethod, 'triz'>;
+export type GenerationMethod = 'triz' | 'scamper';
 export type EvalMode = 'rubryka' | 'pugh' | 'pary';
 
 export const METHOD_LABELS: Record<GenerationMethod, string> = {
   triz: 'TRIZ',
   scamper: 'SCAMPER',
-  morph: 'Analiza morfologiczna',
 };
 
 export const EVAL_LABELS: Record<EvalMode, string> = {
@@ -42,7 +39,6 @@ export interface MethodGroup {
 
 export interface Trail {
   readonly problem: string;
-  readonly secondMethod: SecondMethod;
   readonly evalMode: EvalMode;
   readonly contradiction: TrailContradiction;
   readonly groups: readonly MethodGroup[];

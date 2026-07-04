@@ -191,7 +191,8 @@
   .opt + .opt {
     border-left: 1px dashed var(--line);
   }
-  .opt legend {
+  .opt legend,
+  .opt__legend {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.68rem;
     letter-spacing: 0.16em;

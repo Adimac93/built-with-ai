@@ -2,9 +2,9 @@
   <p class="eyebrow">System rozwiązywania problemów wynalazczych</p>
   <h1 id="hero-h">Od problemu do wynalazku</h1>
   <p class="lead">
-    Wpisz dowolny problem techniczny, wybierz metodę generowania pomysłów i
-    sposób ich oceny. Heureka sformułuje kontradykcję, wygeneruje kandydatów,
-    oceni każdego z nich i uzasadni wybór — krok po kroku, do wglądu.
+    Wpisz dowolny problem techniczny i wybierz sposób oceny kandydatów. Heureka
+    sformułuje kontradykcję, wygeneruje pomysły metodami TRIZ i SCAMPER, oceni
+    każdy z nich i uzasadni wybór — krok po kroku, do wglądu.
   </p>
 
   <form class="form" (submit)="run($event)" novalidate>
@@ -23,34 +23,17 @@
     ></textarea>
 
     <div class="form__options">
-      <fieldset class="opt">
-        <legend>Metody generowania — TRIZ + druga do wyboru</legend>
+      <div class="opt">
+        <p class="opt__legend">Metody generowania rozwiązań</p>
         <div class="chips">
           <span class="chip chip--fixed"
-            >TRIZ <span class="chip__req">zawsze</span></span
+            >TRIZ <span class="chip__req">matryca</span></span
           >
-          <label class="chip">
-            <input
-              type="radio"
-              name="method"
-              value="scamper"
-              [checked]="secondMethod() === 'scamper'"
-              (change)="secondMethod.set('scamper')"
-            />
-            SCAMPER
-          </label>
-          <label class="chip">
-            <input
-              type="radio"
-              name="method"
-              value="morph"
-              [checked]="secondMethod() === 'morph'"
-              (change)="secondMethod.set('morph')"
-            />
-            Analiza morfologiczna
-          </label>
+          <span class="chip chip--fixed"
+            >SCAMPER <span class="chip__req">operatory</span></span
+          >
         </div>
-      </fieldset>
+      </div>
       <fieldset class="opt">
         <legend>Sposób ewaluacji kandydatów</legend>
         <div class="chips">

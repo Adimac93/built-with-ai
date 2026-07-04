@@ -7,13 +7,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { AnalysisEngine } from '../../services/analysis-engine';
-import {
-  EVAL_LABELS,
-  EvalMode,
-  METHOD_LABELS,
-  SecondMethod,
-  Trail,
-} from '../../models/trail.model';
+import { EVAL_LABELS, EvalMode, Trail } from '../../models/trail.model';
 
 const PHASES = [
   'Krok 1/5 — normalizacja problemu…',
@@ -36,10 +30,8 @@ export class AnalysisPage {
     viewChild.required<ElementRef<HTMLTextAreaElement>>('problemField');
 
   protected readonly evalLabels = EVAL_LABELS;
-  protected readonly methodLabels = METHOD_LABELS;
 
   protected readonly problem = signal('');
-  protected readonly secondMethod = signal<SecondMethod>('scamper');
   protected readonly evalMode = signal<EvalMode>('rubryka');
   protected readonly running = signal(false);
   protected readonly status = signal('');
@@ -65,11 +57,7 @@ export class AnalysisPage {
     }, PHASE_INTERVAL_MS);
 
     try {
-      const trail = await this.engine.solve(
-        problem,
-        this.secondMethod(),
-        this.evalMode(),
-      );
+      const trail = await this.engine.solve(problem, this.evalMode());
       this.trail.set(trail);
       this.status.set('Analiza zakończona · dane przykładowe (mock silnika)');
       setTimeout(() => this.resultsHeading().nativeElement.focus());

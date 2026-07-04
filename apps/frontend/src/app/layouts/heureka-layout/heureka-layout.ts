@@ -30,7 +30,7 @@ const SHEET_META: Record<string, SheetMeta> = {
 
 const DEFAULT_META: SheetMeta = {
   ark: 'ARK. 1/3',
-  label: 'TRIZ · SCAMPER · MORFOLOGIA',
+  label: 'TRIZ · SCAMPER',
   arkusz: 'Analiza',
 };
 
