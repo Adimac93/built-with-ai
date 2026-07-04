@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ConfigProvider } from '../config/config-provider';
 import {
+  CriterionScore,
   EvalMode,
   METHOD_LABELS,
   MethodGroup,
@@ -72,21 +73,46 @@ export class AnalysisEngine {
     const scoreOf = new Map<string, number>(
       evaluations.map((e) => [e.trace_id, e.total]),
     );
+    const breakdownOf = new Map<string, CriterionScore[]>(
+      evaluations.map((e) => [
+        e.trace_id,
+        Object.entries(e.scores ?? {}).map(([criterion, score]) => ({
+          criterion: criterion.split('_').join(' '),
+          score,
+        })),
+      ]),
+    );
 
-    const trizCandidates: TrailCandidate[] = trizRaw.map((c, i) => ({
+    // Top 3 per metoda (wg wyniku łącznego) — tylko ci wchodzą do traila.
+    const TOP_PER_METHOD = 3;
+
+    const topOf = <T extends { trace_id: string }>(raw: T[]): T[] =>
+      [...raw]
+        .sort(
+          (a, b) =>
+            (scoreOf.get(b.trace_id) ?? 0) - (scoreOf.get(a.trace_id) ?? 0),
+        )
+        .slice(0, TOP_PER_METHOD);
+
+    const trizTop = topOf(trizRaw);
+    const scamperTop = topOf(scamperRaw);
+
+    const trizCandidates: TrailCandidate[] = trizTop.map((c, i) => ({
       method: 'triz' as const,
       source: `Zasada ${c.principle_number} · ${c.principle_name}`,
       name: `Kandydat T${i + 1}`,
       description: c.idea,
       score: scoreOf.get(c.trace_id) ?? 0,
+      breakdown: breakdownOf.get(c.trace_id) ?? [],
     }));
 
-    const scamperCandidates: TrailCandidate[] = scamperRaw.map((c, i) => ({
+    const scamperCandidates: TrailCandidate[] = scamperTop.map((c, i) => ({
       method: 'scamper' as const,
       source: `Operator ${c.operator} · ${c.operator_name}`,
       name: `Kandydat S${i + 1}`,
       description: c.idea,
       score: scoreOf.get(c.trace_id) ?? 0,
+      breakdown: breakdownOf.get(c.trace_id) ?? [],
     }));
 
     const allCandidates = [...trizCandidates, ...scamperCandidates];
@@ -94,10 +120,11 @@ export class AnalysisEngine {
 
     const winnerId = r.step5_choice?.winner_id;
     const traceEntries = [
-      ...trizRaw.map((c, i) => ({ traceId: c.trace_id, candidate: trizCandidates[i] })),
-      ...scamperRaw.map((c, i) => ({ traceId: c.trace_id, candidate: scamperCandidates[i] })),
+      ...trizTop.map((c, i) => ({ traceId: c.trace_id, candidate: trizCandidates[i] })),
+      ...scamperTop.map((c, i) => ({ traceId: c.trace_id, candidate: scamperCandidates[i] })),
     ];
     const winner = traceEntries.find((x) => x.traceId === winnerId)?.candidate ?? ranked[0];
+    const runnerUp = ranked.find((c) => c !== winner) ?? null;
 
     const principleNums = (lookup.principles ?? [])
       .map((p) => p.number)
@@ -127,6 +154,7 @@ export class AnalysisEngine {
       groups,
       ranked,
       winner,
+      runnerUp,
       candidateCount: allCandidates.length,
     };
   }

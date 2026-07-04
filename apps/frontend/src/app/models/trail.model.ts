@@ -12,12 +12,19 @@ export const EVAL_LABELS: Record<EvalMode, string> = {
   pary: 'Porównanie parami',
 };
 
+export interface CriterionScore {
+  readonly criterion: string;
+  readonly score: number;
+}
+
 export interface TrailCandidate {
   readonly method: GenerationMethod;
   readonly source: string;
   readonly name: string;
   readonly description: string;
   readonly score: number;
+  /** Oceny per kryterium z kroku 4 — argumentacja wyboru. */
+  readonly breakdown: readonly CriterionScore[];
 }
 
 export interface TrailParameter {
@@ -45,5 +52,7 @@ export interface Trail {
   readonly groups: readonly MethodGroup[];
   readonly ranked: readonly TrailCandidate[];
   readonly winner: TrailCandidate;
+  /** Drugi w rankingu — do pokazania przewagi zwycięzcy. */
+  readonly runnerUp: TrailCandidate | null;
   readonly candidateCount: number;
 }
