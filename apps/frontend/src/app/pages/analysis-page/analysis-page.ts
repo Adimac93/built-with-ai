@@ -175,6 +175,11 @@ export class AnalysisPage {
         this.highlight.processing.set(false);
         this.resultsHeading().nativeElement.focus();
       }, 1500);
+    } catch {
+      this.status.set('');
+      this.error.set(
+        'Nie udało się połączyć z silnikiem analizy. Sprawdź, czy API działa, i spróbuj ponownie.',
+      );
     } finally {
       clearInterval(timer);
       this.running.set(false);
