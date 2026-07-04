@@ -6,180 +6,8 @@
 <title>Heureka — system rozwiązywania problemów wynalazczych</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"><style>
-  :root{
-    --paper:#F1F4EC;
-    --grid:#D6DECB;
-    --ink:#1B2B21;
-    --graphite:#5A685A;
-    --card:#FAFBF6;
-    --red:#C93A26;
-    --line:#8F9C8C;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{font-size:16px}
-  body{
-    font-family:"IBM Plex Sans",sans-serif;
-    color:var(--ink);
-    background:
-      linear-gradient(var(--grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px),
-      var(--paper);
-    background-size:24px 24px;
-    line-height:1.55;
-    padding:24px;
-  }
-  .skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:var(--paper);padding:8px 16px;z-index:10}
-  .skip:focus{left:32px}
-  :focus-visible{outline:3px solid var(--red);outline-offset:2px}
-
-  /* ── arkusz ── */
-  .sheet{
-    max-width:1080px;margin:0 auto;
-    background:var(--card);
-    border:1.5px solid var(--ink);
-    box-shadow:0 0 0 5px var(--card), 0 0 0 6.5px var(--ink);
-  }
-  .sheet__inner{padding:clamp(24px,5vw,64px)}
-
-  /* ── nagłówek arkusza ── */
-  .masthead{
-    display:flex;justify-content:space-between;align-items:baseline;gap:16px;
-    border-bottom:1.5px solid var(--ink);
-    padding-bottom:14px;margin-bottom:clamp(32px,6vw,72px);
-  }
-  .masthead__brand{
-    font-family:"Big Shoulders Display";font-weight:800;font-size:1.5rem;
-    letter-spacing:.14em;text-transform:uppercase;
-  }
-  .masthead__brand span{color:var(--red)}
-  .masthead__meta{font-family:"IBM Plex Mono";font-size:.72rem;color:var(--graphite);text-align:right}
-
-  /* ── hero + formularz ── */
-  .eyebrow{
-    font-family:"IBM Plex Mono";font-size:.75rem;letter-spacing:.22em;
-    text-transform:uppercase;color:var(--graphite);margin-bottom:16px;
-  }
-  h1{
-    font-family:"Big Shoulders Display";font-weight:800;
-    font-size:clamp(3rem,8vw,5.6rem);line-height:.95;
-    text-transform:uppercase;letter-spacing:.01em;max-width:14ch;
-  }
-  .lead{max-width:52ch;margin:20px 0 40px;color:var(--graphite);font-size:1.05rem}
-
-  .form{border:1.5px solid var(--ink);background:var(--paper);position:relative}
-  .form__head{
-    display:flex;justify-content:space-between;align-items:center;
-    border-bottom:1px solid var(--ink);
-    padding:10px 16px;
-    font-family:"IBM Plex Mono";font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
-  }
-  .form label{font-weight:500}
-  .form textarea{
-    display:block;width:100%;min-height:130px;resize:vertical;
-    border:0;background:transparent;padding:16px;
-    font:inherit;font-size:.95rem;color:var(--ink);
-  }
-  .form__foot{display:flex;justify-content:space-between;align-items:center;gap:16px;border-top:1px dashed var(--line);padding:12px 16px}
-  .form__hint{font-family:"IBM Plex Mono";font-size:.72rem;color:var(--graphite)}
-  .btn{
-    font-family:"Big Shoulders Display";font-weight:800;font-size:1.05rem;
-    letter-spacing:.12em;text-transform:uppercase;
-    background:var(--ink);color:var(--card);border:1.5px solid var(--ink);
-    padding:12px 28px;cursor:pointer;
-  }
-  .btn:hover{background:var(--red);border-color:var(--red)}
-
-  /* ── trail ── */
-  .trail{margin-top:clamp(48px,8vw,88px);position:relative}
-  .trail::before{ /* linia traserska */
-    content:"";position:absolute;top:0;bottom:0;left:29px;
-    border-left:1.5px solid var(--ink);
-  }
-  .step{position:relative;padding:0 0 clamp(40px,6vw,64px) 84px}
-  .step:last-child{padding-bottom:0}
-  .step__no{
-    position:absolute;left:0;top:-6px;width:60px;height:60px;
-    display:grid;place-items:center;
-    background:var(--card);border:1.5px solid var(--ink);
-    font-family:"Big Shoulders Display";font-weight:800;font-size:1.9rem;
-  }
-  .step__kicker{
-    font-family:"IBM Plex Mono";font-size:.72rem;letter-spacing:.2em;
-    text-transform:uppercase;color:var(--graphite);margin-bottom:4px;
-  }
-  .step h2{
-    font-family:"Big Shoulders Display";font-weight:800;font-size:1.9rem;
-    text-transform:uppercase;letter-spacing:.03em;margin-bottom:14px;
-  }
-  .note{border:1px solid var(--line);background:var(--paper);padding:14px 18px;max-width:64ch;font-size:.95rem}
-
-  /* kontradykcja */
-  .contradiction{display:flex;flex-wrap:wrap;align-items:stretch;gap:12px;margin-bottom:12px}
-  .param{border:1.5px solid var(--ink);background:var(--card);padding:12px 16px;flex:1;min-width:210px}
-  .param__tag{font-family:"IBM Plex Mono";font-size:.72rem;color:var(--graphite)}
-  .param__name{font-weight:600}
-  .param--worse .param__tag::after{content:" ↓ pogarsza się";color:var(--red)}
-  .param--better .param__tag::after{content:" ↑ poprawiamy"}
-  .vs{align-self:center;font-family:"Big Shoulders Display";font-weight:800;font-size:1.3rem}
-  .matrix{font-family:"IBM Plex Mono";font-size:.82rem;background:var(--ink);color:var(--card);display:inline-block;padding:8px 14px}
-  .matrix b{color:#F2B8AD;font-weight:500}
-
-  /* kandydaci */
-  .methods{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  .method__title{
-    font-family:"IBM Plex Mono";font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;
-    border-bottom:1.5px solid var(--ink);padding-bottom:6px;margin-bottom:12px;
-  }
-  .cand{border:1px solid var(--line);background:var(--card);padding:14px 16px;margin-bottom:10px}
-  .cand__src{font-family:"IBM Plex Mono";font-size:.7rem;color:var(--graphite);display:block;margin-bottom:4px}
-  .cand__name{font-weight:600}
-  .cand p{font-size:.88rem;color:var(--graphite);margin-top:4px}
-
-  /* ewaluacja */
-  .scores{width:100%;border-collapse:collapse;font-size:.9rem}
-  .scores th,.scores td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
-  .scores th{font-family:"IBM Plex Mono";font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--graphite);font-weight:500}
-  .scores td:last-child,.scores th:last-child{text-align:right}
-  .bar{display:inline-block;height:10px;background:var(--ink);vertical-align:middle;margin-right:10px}
-  .scores tr.win td{background:#F6E8E4}
-  .score{font-family:"IBM Plex Mono"}
-
-  /* wybór */
-  .choice{border:1.5px solid var(--ink);background:var(--card);padding:24px 28px;position:relative;max-width:640px}
-  .choice h3{font-family:"Big Shoulders Display";font-weight:800;font-size:1.7rem;text-transform:uppercase}
-  .choice p{margin-top:8px;font-size:.95rem;color:var(--graphite);max-width:48ch}
-  .stamp{
-    position:absolute;right:22px;top:-18px;transform:rotate(-7deg);
-    font-family:"Big Shoulders Display";font-weight:800;font-size:1.5rem;letter-spacing:.2em;
-    color:var(--red);border:3px double var(--red);padding:4px 18px;
-    background:var(--card);text-transform:uppercase;
-  }
-
-  /* ── tabelka rysunkowa ── */
-  .titleblock{
-    display:grid;grid-template-columns:2fr 1fr 1fr 1fr;
-    border-top:1.5px solid var(--ink);
-    font-family:"IBM Plex Mono";font-size:.72rem;
-  }
-  .titleblock div{padding:10px 16px;border-right:1px solid var(--ink)}
-  .titleblock div:last-child{border-right:0}
-  .titleblock dt{color:var(--graphite);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase}
-  .titleblock dd{font-weight:500}
-
-  @media (max-width:720px){
-    .methods{grid-template-columns:1fr}
-    .step{padding-left:0;padding-top:76px}
-    .trail::before{display:none}
-    .titleblock{grid-template-columns:1fr 1fr}
-    .titleblock div{border-bottom:1px solid var(--ink)}
-  }
-  @media (prefers-reduced-motion:no-preference){
-    .step{animation:rise .5s ease both}
-    @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-  }
-</style>
-</head>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="heureka.css"></head>
 <body>
 <a class="skip" href="#trail">Przejdź do ścieżki rozumowania</a>
 
@@ -188,20 +16,44 @@
 
     <header class="masthead">
       <div class="masthead__brand">Heureka<span>.</span></div>
-      <div class="masthead__meta">ARK. 1/1 · REW. A<br>SILNIK: TRIZ + SCAMPER</div>
+      <nav class="nav" aria-label="Główna nawigacja">
+        <a href="heureka.html" aria-current="page">Analiza</a>
+        <a href="team.html">Zespół</a>
+      </nav>
+      <div class="masthead__meta">ARK. 1/2 · REW. B<br>SILNIK: TRIZ + METODY</div>
     </header>
 
     <section aria-labelledby="hero-h">
       <p class="eyebrow">System rozwiązywania problemów wynalazczych</p>
       <h1 id="hero-h">Od problemu do wynalazku</h1>
-      <p class="lead">Wpisz problem techniczny. Heureka sformułuje kontradykcję, wygeneruje kandydatów metodami TRIZ i SCAMPER, oceni każdego z nich i uzasadni wybór — krok po kroku, do wglądu.</p>
+      <p class="lead">Wpisz dowolny problem techniczny, wybierz metody generowania pomysłów i sposób ich oceny. Heureka sformułuje kontradykcję, wygeneruje kandydatów, oceni każdego z nich i uzasadni wybór — krok po kroku, do wglądu.</p>
 
       <form class="form">
         <div class="form__head">
           <label for="problem">Zgłoszenie problemu</label>
           <span>Pole 01</span>
         </div>
-        <textarea id="problem" name="problem">Transport ropy przez oceany opłaca się tylko na wielką skalę, dlatego branża używa ogromnych tankowców. Gdy dochodzi do kolizji lub awarii kadłuba, wyciek jest katastrofalny i niemal niemożliwy do opanowania. Jak znacząco zmniejszyć ryzyko i skalę wycieków, nie zmieniając samego modelu transportu?</textarea>
+        <textarea id="problem" name="problem" placeholder="Opisz problem: co ma działać lepiej, w jakich warunkach występuje trudność i czego nie wolno zmienić…"></textarea>
+
+        <div class="form__options">
+          <fieldset class="opt">
+            <legend>Metody generowania — min. 2, TRIZ wymagana</legend>
+            <div class="chips">
+              <label class="chip chip--locked"><input type="checkbox" checked aria-disabled="true" onclick="return false"> TRIZ <span class="chip__req">wymagana</span></label>
+              <label class="chip"><input type="checkbox" checked> SCAMPER</label>
+              <label class="chip"><input type="checkbox"> 5 × Dlaczego</label>
+            </div>
+          </fieldset>
+          <fieldset class="opt">
+            <legend>Sposób ewaluacji kandydatów</legend>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="eval" checked> Rubryka ważona</label>
+              <label class="chip"><input type="radio" name="eval"> Macierz Pugha</label>
+              <label class="chip"><input type="radio" name="eval"> Porównanie parami</label>
+            </div>
+          </fieldset>
+        </div>
+
         <div class="form__foot">
           <span class="form__hint">Dowolny problem wynalazczy — im konkretniej, tym lepiej</span>
           <button class="btn" type="submit">Uruchom analizę</button>
@@ -210,12 +62,13 @@
     </section>
 
     <main class="trail" id="trail" aria-label="Ścieżka rozumowania">
+      <p class="trail__note">Schemat ścieżki rozumowania — sekcje wypełniają się wynikami po uruchomieniu analizy.</p>
 
       <section class="step" aria-labelledby="s1">
         <div class="step__no" aria-hidden="true">1</div>
         <p class="step__kicker">Krok 1 · wejście znormalizowane</p>
         <h2 id="s1">Problem</h2>
-        <p class="note">Zminimalizować ryzyko i skalę wycieków ropy z tankowców przy zachowaniu obecnego modelu transportu morskiego na wielką skalę.</p>
+        <p class="note"><span class="ph">Zwięzła definicja problemu: co poprawić, w jakich warunkach i jakich ograniczeń nie wolno naruszyć.</span></p>
       </section>
 
       <section class="step" aria-labelledby="s2">
@@ -224,51 +77,51 @@
         <h2 id="s2">Kontradykcja techniczna</h2>
         <div class="contradiction">
           <div class="param param--better">
-            <span class="param__tag">Parametr 27</span>
-            <p class="param__name">Niezawodność</p>
+            <span class="param__tag">Parametr i</span>
+            <p class="param__name"><span class="ph">Cecha, którą poprawiamy</span></p>
           </div>
           <span class="vs" aria-hidden="true">×</span>
           <div class="param param--worse">
-            <span class="param__tag">Parametr 39</span>
-            <p class="param__name">Wydajność</p>
+            <span class="param__tag">Parametr j</span>
+            <p class="param__name"><span class="ph">Cecha, która się pogarsza</span></p>
           </div>
         </div>
-        <p class="matrix">MATRYCA[27, 39] → zasady <b>1 · 11 · 35</b> <span aria-hidden="true">·</span> lookup deterministyczny</p>
+        <p class="matrix">MATRYCA[i, j] → <b>zasady wynalazcze</b> · lookup deterministyczny</p>
       </section>
 
       <section class="step" aria-labelledby="s3">
         <div class="step__no" aria-hidden="true">3</div>
-        <p class="step__kicker">Krok 3 · po jednym kandydacie na zasadę / operator</p>
+        <p class="step__kicker">Krok 3 · po jednym kandydacie na zasadę / krok metody</p>
         <h2 id="s3">Kandydaci</h2>
         <div class="methods">
           <div>
             <h3 class="method__title">Metoda A — TRIZ</h3>
-            <article class="cand"><span class="cand__src">Zasada 1 · Segmentacja</span><p class="cand__name">Ładownia dzielona na niezależne komory</p><p>Kadłub z dziesiątek szczelnych sekcji — awaria jednej uwalnia ułamek ładunku.</p></article>
-            <article class="cand"><span class="cand__src">Zasada 11 · Amortyzacja zawczasu</span><p class="cand__name">Samouszczelniające membrany</p><p>Warstwa polimeru reagująca z ropą, zasklepiająca pęknięcia kadłuba.</p></article>
-            <article class="cand"><span class="cand__src">Zasada 35 · Zmiana parametrów</span><p class="cand__name">Transport w formie żelu</p><p>Zagęszczenie ropy na czas rejsu — wyciek nie rozlewa się po powierzchni.</p></article>
+            <article class="cand"><span class="cand__src">Zasada n · z lookupu w matrycy</span><p class="cand__name">Kandydat 01</p><p><span class="ph">Szkic rozwiązania wyprowadzony z zasady wynalazczej.</span></p></article>
+            <article class="cand"><span class="cand__src">Zasada n · z lookupu w matrycy</span><p class="cand__name">Kandydat 02</p><p><span class="ph">Szkic rozwiązania wyprowadzony z zasady wynalazczej.</span></p></article>
+            <article class="cand"><span class="cand__src">Zasada n · z lookupu w matrycy</span><p class="cand__name">Kandydat 03</p><p><span class="ph">Szkic rozwiązania wyprowadzony z zasady wynalazczej.</span></p></article>
           </div>
           <div>
-            <h3 class="method__title">Metoda B — SCAMPER</h3>
-            <article class="cand"><span class="cand__src">S · Substitute</span><p class="cand__name">Elastyczne zbiorniki wewnętrzne</p><p>Wymienne „worki" ładunkowe zamiast ładowni zintegrowanej z kadłubem.</p></article>
-            <article class="cand"><span class="cand__src">C · Combine</span><p class="cand__name">Tankowiec z kurtyną barierową</p><p>Zintegrowane zapory rozwijane automatycznie w chwili wykrycia wycieku.</p></article>
-            <article class="cand"><span class="cand__src">A · Adapt</span><p class="cand__name">Konwój z eskortą ratunkową</p><p>Adaptacja konwojów: jednostka przechwytująca płynie z każdą flotyllą.</p></article>
+            <h3 class="method__title">Metoda B — wybrana w formularzu</h3>
+            <article class="cand"><span class="cand__src">Krok metody · np. operator S</span><p class="cand__name">Kandydat 04</p><p><span class="ph">Szkic rozwiązania wyprowadzony z kroku metody.</span></p></article>
+            <article class="cand"><span class="cand__src">Krok metody · np. operator C</span><p class="cand__name">Kandydat 05</p><p><span class="ph">Szkic rozwiązania wyprowadzony z kroku metody.</span></p></article>
+            <article class="cand"><span class="cand__src">Krok metody · np. operator A</span><p class="cand__name">Kandydat 06</p><p><span class="ph">Szkic rozwiązania wyprowadzony z kroku metody.</span></p></article>
           </div>
         </div>
       </section>
 
       <section class="step" aria-labelledby="s4">
         <div class="step__no" aria-hidden="true">4</div>
-        <p class="step__kicker">Krok 4 · rubryka z kroku 1 + oceny LLM z uzasadnieniem</p>
+        <p class="step__kicker">Krok 4 · wg sposobu ewaluacji z formularza, z uzasadnieniami</p>
         <h2 id="s4">Ewaluacja</h2>
         <table class="scores">
-          <thead><tr><th scope="col">Kandydat</th><th scope="col">Metoda</th><th scope="col">Wynik łączny</th></tr></thead>
+          <thead><tr><th scope="col">Kandydat</th><th scope="col">Źródło</th><th scope="col">Wynik łączny</th></tr></thead>
           <tbody>
-            <tr class="win"><td>Ładownia dzielona na niezależne komory</td><td>TRIZ · Z1</td><td><span class="bar" style="width:82px"></span><span class="score">82</span></td></tr>
-            <tr><td>Samouszczelniające membrany</td><td>TRIZ · Z11</td><td><span class="bar" style="width:76px"></span><span class="score">76</span></td></tr>
-            <tr><td>Elastyczne zbiorniki wewnętrzne</td><td>SCAMPER · S</td><td><span class="bar" style="width:71px"></span><span class="score">71</span></td></tr>
-            <tr><td>Transport w formie żelu</td><td>TRIZ · Z35</td><td><span class="bar" style="width:64px"></span><span class="score">64</span></td></tr>
-            <tr><td>Tankowiec z kurtyną barierową</td><td>SCAMPER · C</td><td><span class="bar" style="width:58px"></span><span class="score">58</span></td></tr>
-            <tr><td>Konwój z eskortą ratunkową</td><td>SCAMPER · A</td><td><span class="bar" style="width:43px"></span><span class="score">43</span></td></tr>
+            <tr class="win"><td>Kandydat 03</td><td>TRIZ · zasada n</td><td><span class="bar" style="width:84px"></span><span class="score">84</span></td></tr>
+            <tr><td>Kandydat 01</td><td>TRIZ · zasada n</td><td><span class="bar" style="width:77px"></span><span class="score">77</span></td></tr>
+            <tr><td>Kandydat 05</td><td>Metoda B · krok k</td><td><span class="bar" style="width:69px"></span><span class="score">69</span></td></tr>
+            <tr><td>Kandydat 02</td><td>TRIZ · zasada n</td><td><span class="bar" style="width:61px"></span><span class="score">61</span></td></tr>
+            <tr><td>Kandydat 04</td><td>Metoda B · krok k</td><td><span class="bar" style="width:54px"></span><span class="score">54</span></td></tr>
+            <tr><td>Kandydat 06</td><td>Metoda B · krok k</td><td><span class="bar" style="width:40px"></span><span class="score">40</span></td></tr>
           </tbody>
         </table>
       </section>
@@ -279,8 +132,8 @@
         <h2 id="s5">Wybór</h2>
         <div class="choice">
           <p class="stamp">Wybrano</p>
-          <h3>Ładownia dzielona na niezależne komory</h3>
-          <p>Najwyższy wynik łączny (82/100). Rozwiązuje kontradykcję: niezawodność rośnie bez zmiany modelu transportu, koszt ogranicza się do konstrukcji kadłuba.</p>
+          <h3>Kandydat 03</h3>
+          <p>Najwyższy wynik łączny. Uzasadnienie wyboru pochodzi z ewaluacji: każdy punkt oceny ma zapisane kryterium i komentarz — do wglądu w pełnym reasoning trailu.</p>
         </div>
       </section>
 
@@ -289,8 +142,8 @@
 
   <dl class="titleblock">
     <div><dt>Projekt</dt><dd>Heureka — inventive problem solving</dd></div>
-    <div><dt>Silnik</dt><dd>TRIZ + SCAMPER</dd></div>
-    <div><dt>Rewizja</dt><dd>A</dd></div>
+    <div><dt>Silnik</dt><dd>TRIZ + metody</dd></div>
+    <div><dt>Rewizja</dt><dd>B</dd></div>
     <div><dt>Data</dt><dd>2026-07-04</dd></div>
   </dl>
 </div>
