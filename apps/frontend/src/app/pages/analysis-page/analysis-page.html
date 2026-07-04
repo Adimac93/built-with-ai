@@ -1,0 +1,204 @@
+<section aria-labelledby="hero-h">
+  <p class="eyebrow">System rozwiązywania problemów wynalazczych</p>
+  <h1 id="hero-h">Od problemu do wynalazku</h1>
+  <p class="lead">
+    Wpisz dowolny problem techniczny i wybierz sposób oceny kandydatów. Heureka
+    sformułuje kontradykcję, wygeneruje pomysły metodami TRIZ i SCAMPER, oceni
+    każdy z nich i uzasadni wybór — krok po kroku, do wglądu.
+  </p>
+
+  <form class="form" (submit)="run($event)" novalidate>
+    <div class="form__head">
+      <label for="problem">Zgłoszenie problemu</label>
+      <span aria-hidden="true">Pole 01</span>
+    </div>
+    <textarea
+      #problemField
+      id="problem"
+      name="problem"
+      aria-describedby="form-error problem-hint"
+      placeholder="Opisz problem: co ma działać lepiej, w jakich warunkach występuje trudność i czego nie wolno zmienić…"
+      [value]="problem()"
+      (input)="problem.set(problemField.value)"
+    ></textarea>
+
+    <div class="form__options">
+      <div class="opt">
+        <p class="opt__legend">Metody generowania rozwiązań</p>
+        <div class="chips">
+          <span class="chip chip--fixed"
+            >TRIZ <span class="chip__req">matryca</span></span
+          >
+          <span class="chip chip--fixed"
+            >SCAMPER <span class="chip__req">operatory</span></span
+          >
+        </div>
+      </div>
+      <fieldset class="opt">
+        <legend>Sposób ewaluacji kandydatów</legend>
+        <div class="chips">
+          <label class="chip">
+            <input
+              type="radio"
+              name="eval"
+              value="rubryka"
+              [checked]="evalMode() === 'rubryka'"
+              (change)="evalMode.set('rubryka')"
+            />
+            Rubryka ważona
+          </label>
+          <label class="chip">
+            <input
+              type="radio"
+              name="eval"
+              value="pugh"
+              [checked]="evalMode() === 'pugh'"
+              (change)="evalMode.set('pugh')"
+            />
+            Macierz Pugha
+          </label>
+          <label class="chip">
+            <input
+              type="radio"
+              name="eval"
+              value="pary"
+              [checked]="evalMode() === 'pary'"
+              (change)="evalMode.set('pary')"
+            />
+            Porównanie parami
+          </label>
+        </div>
+      </fieldset>
+    </div>
+
+    @if (error()) {
+      <p class="form__error" id="form-error" role="alert">{{ error() }}</p>
+    }
+
+    <div class="form__foot">
+      <span class="form__hint" id="problem-hint"
+        >Dowolny problem wynalazczy — im konkretniej, tym lepiej</span
+      >
+      <button class="btn" type="submit" [disabled]="running()">
+        Uruchom analizę
+      </button>
+    </div>
+  </form>
+</section>
+
+<section class="results" aria-labelledby="wyniki-h">
+  <div class="results__head">
+    <h2 id="wyniki-h" tabindex="-1" #wynikiH>Ścieżka rozumowania</h2>
+    <p class="results__status" role="status">{{ status() }}</p>
+  </div>
+
+  @if (trail(); as t) {
+    <div class="trail">
+      <section class="step" aria-labelledby="s1">
+        <div class="step__no" aria-hidden="true">1</div>
+        <p class="step__kicker">Krok 1 · wejście znormalizowane</p>
+        <h3 id="s1">Problem</h3>
+        <p class="note">{{ t.problem }}</p>
+      </section>
+
+      <section class="step" aria-labelledby="s2">
+        <div class="step__no" aria-hidden="true">2</div>
+        <p class="step__kicker">Krok 2 · LLM proponuje, kod waliduje zakres 1–39</p>
+        <h3 id="s2">Kontradykcja techniczna</h3>
+        <div class="contradiction">
+          <div class="param param--better">
+            <span class="param__tag">{{ t.contradiction.better.tag }}</span>
+            <p class="param__name">{{ t.contradiction.better.name }}</p>
+          </div>
+          <span class="vs" aria-hidden="true">×</span>
+          <div class="param param--worse">
+            <span class="param__tag">{{ t.contradiction.worse.tag }}</span>
+            <p class="param__name">{{ t.contradiction.worse.name }}</p>
+          </div>
+        </div>
+        <p class="matrix">
+          MATRYCA[27, 36] → zasady <b>{{ t.contradiction.principles }}</b> ·
+          lookup deterministyczny
+        </p>
+      </section>
+
+      <section class="step" aria-labelledby="s3">
+        <div class="step__no" aria-hidden="true">3</div>
+        <p class="step__kicker">
+          Krok 3 · po jednym kandydacie na zasadę / krok metody
+        </p>
+        <h3 id="s3">Kandydaci ({{ t.candidateCount }})</h3>
+        <div class="methods">
+          @for (group of t.groups; track group.method) {
+            <div>
+              <h4 class="method__title">Metoda — {{ group.label }}</h4>
+              @for (c of group.candidates; track c.name) {
+                <article class="cand">
+                  <span class="cand__src">{{ c.source }}</span>
+                  <p class="cand__name">{{ c.name }}</p>
+                  <p>{{ c.description }}</p>
+                </article>
+              }
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="step" aria-labelledby="s4">
+        <div class="step__no" aria-hidden="true">4</div>
+        <p class="step__kicker">
+          Krok 4 · metoda: {{ evalLabels[t.evalMode] }}, oceny z uzasadnieniami
+        </p>
+        <h3 id="s4">Ewaluacja</h3>
+        <table class="scores">
+          <thead>
+            <tr>
+              <th scope="col">Kandydat</th>
+              <th scope="col">Źródło</th>
+              <th scope="col">Wynik łączny</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of t.ranked; track c.name; let first = $first) {
+              <tr [class.win]="first">
+                <td>{{ c.name }}</td>
+                <td>{{ c.source }}</td>
+                <td>
+                  <span
+                    class="bar"
+                    [style.width.px]="c.score"
+                    aria-hidden="true"
+                  ></span>
+                  <span class="score">{{ c.score }}</span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+
+      <section class="step" aria-labelledby="s5">
+        <div class="step__no" aria-hidden="true">5</div>
+        <p class="step__kicker">
+          Krok 5 · deterministyczny argmax — wybiera kod, nie model
+        </p>
+        <h3 id="s5">Wybór</h3>
+        <div class="choice">
+          <p class="stamp" aria-hidden="true">Wybrano</p>
+          <h4>{{ t.winner.name }}</h4>
+          <p>
+            Najwyższy wynik łączny ({{ t.winner.score }}/100) w ocenie metodą
+            „{{ evalLabels[t.evalMode] }}". Źródło pomysłu:
+            {{ t.winner.source }}. Pełne uzasadnienie każdej oceny — w
+            reasoning trailu.
+          </p>
+        </div>
+      </section>
+    </div>
+  } @else {
+    <p class="empty">
+      Wyniki pojawią się tutaj po uruchomieniu analizy — pięć kroków: problem →
+      kontradykcja → kandydaci → ewaluacja → wybór.
+    </p>
+  }
+</section>

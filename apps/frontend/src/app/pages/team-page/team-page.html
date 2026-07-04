@@ -1,0 +1,26 @@
+<p class="eyebrow">Biuro konstrukcyjne</p>
+<h1>Zespół</h1>
+<p class="lead">
+  Troje ludzi, jeden arkusz. Budujemy silnik, który myśli krokami — i każdy z
+  tych kroków ktoś z nas trzyma w ryzach.
+</p>
+
+<div class="crew">
+  @for (member of members; track member.name) {
+    <article class="person">
+      <div class="person__portrait">
+        <img [src]="member.photo" alt="" />
+      </div>
+      <div class="person__body">
+        <p class="person__role">{{ member.role }}</p>
+        <h2 class="person__name">{{ member.name }}</h2>
+        <p>{{ member.bio }}</p>
+        <div class="person__tags">
+          @for (tag of member.tags; track tag) {
+            <span>{{ tag }}</span>
+          }
+        </div>
+      </div>
+    </article>
+  }
+</div>

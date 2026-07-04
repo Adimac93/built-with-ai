@@ -9,7 +9,7 @@
 
 ## 0. Założenia (jawne — do weryfikacji z zespołem)
 
-1. **Druga metoda generowania koncepcji = SCAMPER.** Wybrana, bo ma 7 deterministycznych operatorów → łatwo pokazać „realny, inspektowalny krok logiki" zamiast jednego prompta. Alternatywy (analiza morfologiczna, biomimikra) możliwe bez zmiany architektury — to wymienny moduł w `libs/methods`.
+1. **Metody generowania (decyzja z 2026-07-04): dokładnie dwie — TRIZ + SCAMPER, obie zawsze w jednym przebiegu** (zadanie wymaga min. 2, jedną MUSI być TRIZ). Analiza morfologiczna usunięta z zakresu. SCAMPER: 7 deterministycznych operatorów → łatwo pokazać „realny, inspektowalny krok logiki" zamiast jednego prompta; wymienny moduł w `libs/methods`.
 2. **LLM = Gemini** (`@google/genai`) za cienkim wrapperem w `libs/llm` — event Google, darmowe tokeny. Podmiana na Claude to zmiana jednego adaptera.
 3. **Silnik żyje w NestJS**, CLI (`nest-commander`) i REST wywołują ten sam serwis pipeline'u — zero duplikacji, a kryterium D4 („odpalam 1 komendą") spełnione od razu.
 4. **Matryca kontradykcji TRIZ (39×39 → zasady 1–40) jako statyczny JSON w repo.** Lookup to czysty kod z unit testami — dokładnie to, co ocenianie D4 nazywa „kod tam, gdzie odpowiedź jest znana".

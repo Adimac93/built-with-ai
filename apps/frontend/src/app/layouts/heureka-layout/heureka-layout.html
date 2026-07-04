@@ -1,0 +1,38 @@
+<a class="skip" href="#tresc">Przejdź do treści</a>
+
+<div class="sheet">
+  <div class="sheet__inner">
+    <header class="masthead">
+      <p class="masthead__brand">Heureka<span>.</span></p>
+      <nav class="nav" aria-label="Główna nawigacja">
+        <a
+          routerLink="/"
+          routerLinkActive
+          [routerLinkActiveOptions]="{ exact: true }"
+          ariaCurrentWhenActive="page"
+          >Analiza</a
+        >
+        <a routerLink="/metody" routerLinkActive ariaCurrentWhenActive="page"
+          >Metody</a
+        >
+        <a routerLink="/zespol" routerLinkActive ariaCurrentWhenActive="page"
+          >Zespół</a
+        >
+      </nav>
+      <p class="masthead__meta">
+        {{ meta().ark }} · REW. S+<br />{{ meta().label }}
+      </p>
+    </header>
+
+    <main id="tresc">
+      <router-outlet />
+    </main>
+  </div>
+
+  <dl class="titleblock">
+    <div><dt>Projekt</dt><dd>Heureka — inventive problem solving</dd></div>
+    <div><dt>Arkusz</dt><dd>{{ meta().arkusz }}</dd></div>
+    <div><dt>Rewizja</dt><dd>S+</dd></div>
+    <div><dt>Data</dt><dd>{{ today }}</dd></div>
+  </dl>
+</div>

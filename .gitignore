@@ -50,3 +50,7 @@ Thumbs.db
 .docker/
 
 .env
+
+.playwright-mcp/
+node_modules/
+.env
