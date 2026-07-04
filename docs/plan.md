@@ -9,8 +9,8 @@
 
 ## 0. Założenia (jawne — do weryfikacji z zespołem)
 
-1. **Metody generowania (decyzja z 2026-07-04): dokładnie dwie — TRIZ + SCAMPER, obie zawsze w jednym przebiegu** (zadanie wymaga min. 2, jedną MUSI być TRIZ). Analiza morfologiczna usunięta z zakresu. SCAMPER: 7 deterministycznych operatorów → łatwo pokazać „realny, inspektowalny krok logiki" zamiast jednego prompta; wymienny moduł w `libs/methods`.
-2. **LLM = Gemini** (`@google/genai`) za cienkim wrapperem w `libs/llm` — event Google, darmowe tokeny. Podmiana na Claude to zmiana jednego adaptera.
+1. **Metody generowania (decyzja z 2026-07-04): dokładnie dwie — TRIZ + SCAMPER, obie zawsze w jednym przebiegu** (zadanie wymaga min. 2, jedną MUSI być TRIZ). Analiza morfologiczna usunięta z zakresu. SCAMPER: 7 deterministycznych operatorów → łatwo pokazać „realny, inspektowalny krok logiki" zamiast jednego prompta; wymienny moduł w `apps/api/src/pipeline`.
+2. **LLM = Gemini** (`@google/genai`) za cienkim wrapperem providera — event Google, darmowe tokeny. Podmiana na Claude to zmiana jednego adaptera.
 3. **Silnik żyje w NestJS**, CLI (`nest-commander`) i REST wywołują ten sam serwis pipeline'u — zero duplikacji, a kryterium D4 („odpalam 1 komendą") spełnione od razu.
 4. **Matryca kontradykcji TRIZ (39×39 → zasady 1–40) jako statyczny JSON w repo.** Lookup to czysty kod z unit testami — dokładnie to, co ocenianie D4 nazywa „kod tam, gdzie odpowiedź jest znana".
 5. Prompty do LLM **po angielsku** (dzień 2: polskie prompty kosztują więcej tokenów); UI i dokumenty po polsku.
@@ -30,15 +30,9 @@
 
 ```
 apps/
-  api   — NestJS: moduł pipeline + REST + Swagger
-  cli   — nest-commander: `solve`, `eval` (te same serwisy co api)
-  web   — Angular 21.2: jedna strona — pole tekstowe na problem → pod spodem trail (ng-diagram)
-libs/
-  domain   — typy kroków, DTO, schematy zod reasoning trailu   [tag: util]
-  triz     — matryca JSON + deterministyczny lookup            [tag: util]
-  methods  — SCAMPER (interfejs wspólny z TRIZ-generatorem)    [tag: util]
-  llm      — wrapper providera (Gemini), retry, log tokenów    [tag: data-access]
-  evals    — scenariusze, metryki, runner                      [tag: feature]
+  api       — NestJS: moduł pipeline + REST + Swagger
+  agent     — agent uruchamiany osobno i wołany przez api
+  frontend  — Angular 21.2: pole tekstowe na problem → trail (ng-diagram)
 ```
 
 Reguły: domeny nie importują się nawzajem; `util` importuje tylko `util`; jeden wrapper HTTP po stronie Angulara; DTO zamiast encji na granicy API; sekrety tylko w `.env`.
@@ -59,7 +53,7 @@ Reguły: domeny nie importują się nawzajem; `util` importuje tylko `util`; jed
 
 ## 4. Evals (plan pod ocenianie D4, 50/50)
 
-- **Inputy (50%):** `libs/evals/scenarios/` — 7 problemów z zadania + trudne przypadki: wejście niejasne, śmieciowe, problem spoza siódemki. Format: pliki tekstowe + manifest JSON.
+- **Inputy (50%):** scenariusze eval w repo — 7 problemów z zadania + trudne przypadki: wejście niejasne, śmieciowe, problem spoza siódemki. Format: pliki tekstowe + manifest JSON.
 - **Metryki (50%):** runner (`nx run cli:eval`) odpala pipeline po całej liście i liczy:
   - kodem: kompletność trailu (schema), poprawność lookupu (znane pary → znane zasady), liczność kandydatów, wybór == max, zachowanie na śmieciowym wejściu (czytelny błąd, nie crash);
   - LLM-judge (skala %, nie pass/fail — dzień 4): sensowność kontradykcji, jakość kandydatów.

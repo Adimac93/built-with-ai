@@ -59,7 +59,7 @@ flowchart TD
             API["api — NestJS<br/>moduły, DTO, ValidationPipe,<br/>Swagger/OpenAPI, CORS"]
             CLI["cli — nest-commander<br/>'odpalam 1 komendą' (kryterium D4)"]
         end
-        subgraph LIBS["libs/ (tagi + depConstraints)"]
+        subgraph API_MOD["apps/api/src/ (moduły NestJS)"]
             DOM["domain — typy, DTO,<br/>schematy zod reasoning trailu"]
             TRIZ["triz — matryca JSON<br/>+ deterministyczny lookup"]
             MET["methods — SCAMPER"]
@@ -106,7 +106,7 @@ flowchart TD
 | Biblioteka | Po co | Uzasadnienie |
 | --- | --- | --- |
 | `zod` | walidacja outputów LLM na granicy każdego kroku | „every step must run as real, inspectable logic" — schema per krok, kod łapie halucynacje |
-| `@google/genai` (Gemini) | klient LLM | event GDG/Google, darmowe tokeny; wrapper w `libs/llm` pozwala podmienić na Claude |
+| `@google/genai` (Gemini) | klient LLM | event GDG/Google, darmowe tokeny; wrapper providera pozwala podmienić na Claude |
 | `nest-commander` | CLI w tym samym kodzie co API | kryterium D4: „odpalam 1 komendą"; zero duplikacji silnika |
 | `@dagrejs/dagre` lub `elkjs` | auto-layout grafu | dzień 3 wprost: ng-diagram **nie ma** auto-layoutu — potrzebna zewnętrzna paczka |
 | `@nestjs/config` + `.env` | konfiguracja i sekrety | dzień 2/3: klucze API nigdy w repo ani w prompcie agenta |
