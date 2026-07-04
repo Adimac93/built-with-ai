@@ -195,6 +195,16 @@
         </div>
       </section>
     </div>
+
+    <section class="graph" aria-labelledby="graf-h">
+      <div class="graph__head">
+        <h3 id="graf-h">Graf przebiegu</h3>
+        <p class="graph__hint">Interaktywny — przesuwaj i przybliżaj</p>
+      </div>
+      <div class="graph__canvas">
+        <app-trail-diagram [trail]="t" />
+      </div>
+    </section>
   } @else {
     <p class="empty">
       Wyniki pojawią się tutaj po uruchomieniu analizy — pięć kroków: problem →

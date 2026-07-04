@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { AnalysisEngine } from '../../services/analysis-engine';
 import { EVAL_LABELS, EvalMode, Trail } from '../../models/trail.model';
+import { TrailDiagram } from '../../components/trail-diagram/trail-diagram';
 
 const PHASES = [
   'Krok 1/5 — normalizacja problemu…',
@@ -18,6 +19,7 @@ const PHASES = [
 const PHASE_INTERVAL_MS = 350;
 
 @Component({
+  imports: [TrailDiagram],
   selector: 'app-analysis-page',
   templateUrl: './analysis-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

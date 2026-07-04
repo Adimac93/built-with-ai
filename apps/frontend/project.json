@@ -20,7 +20,10 @@
             "input": "apps/frontend/public"
           }
         ],
-        "styles": ["apps/frontend/src/styles.scss"]
+        "styles": [
+          "node_modules/ng-diagram/styles.css",
+          "apps/frontend/src/styles.scss"
+        ]
       },
       "configurations": {
         "production": {

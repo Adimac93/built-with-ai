@@ -552,6 +552,43 @@
     text-transform: uppercase;
   }
 
+  /* ── graf przebiegu ── */
+  .graph {
+    display: block;
+    margin-top: clamp(40px, 6vw, 64px);
+  }
+  .graph__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-bottom: 1.5px solid var(--ink);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+  }
+  .graph__head h3 {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 800;
+    font-size: 1.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .graph__hint {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--graphite);
+  }
+  .graph__canvas {
+    height: 540px;
+    border: 1.5px solid var(--ink);
+    background: var(--paper);
+    display: flex;
+  }
+  .graph__canvas app-trail-diagram {
+    flex: 1;
+  }
+
   /* ── metodologia ── */
   .doc-section {
     display: block;
