@@ -7,62 +7,54 @@
   "targets": {
     "build": {
       "executor": "nx:run-commands",
-      "options": {
-        "command": "webpack-cli build",
-        "args": ["--node-env=production"],
-        "cwd": "apps/api"
-      },
-      "configurations": {
-        "development": {
-          "args": ["--node-env=development"]
-        }
-      }
-    },
-    "prune-lockfile": {
-      "dependsOn": ["build"],
       "cache": true,
-      "executor": "@nx/js:prune-lockfile",
-      "outputs": [
-        "{workspaceRoot}/dist/apps/api/package.json",
-        "{workspaceRoot}/dist/apps/api/pnpm-lock.yaml"
+      "inputs": [
+        "{projectRoot}/src/**/*",
+        "{projectRoot}/Cargo.toml",
+        "{projectRoot}/Cargo.lock"
       ],
+      "outputs": ["{projectRoot}/target/release/api"],
       "options": {
-        "buildTarget": "build"
+        "command": "cargo build --release",
+        "cwd": "apps/api"
       }
-    },
-    "copy-workspace-modules": {
-      "dependsOn": ["build"],
-      "cache": true,
-      "outputs": ["{workspaceRoot}/dist/apps/api/workspace_modules"],
-      "executor": "@nx/js:copy-workspace-modules",
-      "options": {
-        "buildTarget": "build"
-      }
-    },
-    "prune": {
-      "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
-      "executor": "nx:noop"
     },
     "serve": {
       "continuous": true,
-      "executor": "@nx/js:node",
-      "defaultConfiguration": "development",
-      "dependsOn": ["build"],
+      "executor": "nx:run-commands",
       "options": {
-        "buildTarget": "api:build",
-        "runBuildTargetDependencies": false
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "api:build:development"
-        },
-        "production": {
-          "buildTarget": "api:build:production"
-        }
+        "command": "cargo run",
+        "cwd": "apps/api"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/src/**/*",
+        "{projectRoot}/Cargo.toml",
+        "{projectRoot}/Cargo.lock"
+      ],
+      "options": {
+        "command": "cargo test",
+        "cwd": "apps/api"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/src/**/*",
+        "{projectRoot}/Cargo.toml",
+        "{projectRoot}/Cargo.lock"
+      ],
+      "options": {
+        "command": "cargo clippy -- -D warnings",
+        "cwd": "apps/api"
       }
     },
     "deploy": {
-      "dependsOn": ["build", "agent:deploy"],
+      "dependsOn": ["agent:deploy"],
       "executor": "nx:run-commands",
       "options": {
         "command": "bash tools/deploy-api.sh"
