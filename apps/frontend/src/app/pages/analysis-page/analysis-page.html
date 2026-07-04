@@ -90,6 +90,24 @@
   </form>
 </section>
 
+<section class="pipeline-section" aria-labelledby="pipeline-h">
+  <details class="pipeline__drawer">
+    <summary class="pipeline__trigger">
+      <span id="pipeline-h">Architektura pipeline</span>
+      <span class="pipeline__meta">SequentialAgent · 8 węzłów · 1 gałąź równoległa</span>
+    </summary>
+    <div class="pipeline__diagram-wrap">
+      @defer (on idle) {
+        <app-pipeline-diagram />
+      } @error {
+        <p style="padding:16px;font-family:monospace;font-size:0.8rem;color:#c93a26">
+          Diagram failed to load. Check browser console for details.
+        </p>
+      }
+    </div>
+  </details>
+</section>
+
 <section class="results" aria-labelledby="wyniki-h">
   <div class="results__head">
     <h2 id="wyniki-h" tabindex="-1" #wynikiH>Ścieżka rozumowania</h2>

@@ -6,6 +6,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { PipelineDiagramComponent } from '../../components/pipeline-diagram/pipeline-diagram';
 import { AnalysisEngine } from '../../services/analysis-engine';
 import { EVAL_LABELS, EvalMode, Trail } from '../../models/trail.model';
 
@@ -19,6 +20,7 @@ const PHASE_INTERVAL_MS = 8000;
 
 @Component({
   selector: 'app-analysis-page',
+  imports: [PipelineDiagramComponent],
   templateUrl: './analysis-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
