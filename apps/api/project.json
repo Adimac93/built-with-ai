@@ -62,10 +62,10 @@
       }
     },
     "deploy": {
-      "dependsOn": ["build"],
+      "dependsOn": ["build", "agent:deploy"],
       "executor": "nx:run-commands",
       "options": {
-        "command": "docker build --no-cache --platform linux/amd64 -t gcr.io/built-with-ai-gdg-wroclaw/api -f apps/api/Dockerfile . && docker push gcr.io/built-with-ai-gdg-wroclaw/api && gcloud run deploy api --image gcr.io/built-with-ai-gdg-wroclaw/api --platform managed --region us-central1 --allow-unauthenticated --project built-with-ai-gdg-wroclaw"
+        "command": "bash tools/deploy-api.sh"
       }
     }
   }
