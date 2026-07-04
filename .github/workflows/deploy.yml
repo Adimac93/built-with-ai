@@ -14,7 +14,43 @@ env:
   SERVICE_ACCOUNT: 'github-actions-sa@built-with-ai-gdg-wroclaw.iam.gserviceaccount.com'
 
 jobs:
+  deploy-agent:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker --quiet
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build --platform linux/amd64 -t gcr.io/${{ env.PROJECT_ID }}/agent:${{ github.sha }} -t gcr.io/${{ env.PROJECT_ID }}/agent:latest -f apps/agent/Dockerfile .
+          docker push gcr.io/${{ env.PROJECT_ID }}/agent --all-tags
+
+      - name: Deploy Agent to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: agent
+          image: gcr.io/${{ env.PROJECT_ID }}/agent:${{ github.sha }}
+          region: us-east1
+          flags: '--allow-unauthenticated'
+          env_vars: |
+            GOOGLE_CLOUD_PROJECT=${{ env.PROJECT_ID }}
+            GOOGLE_CLOUD_LOCATION=global
+
   deploy-api:
+    needs: deploy-agent
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'

@@ -5,6 +5,7 @@ dist
 tmp
 out-tsc
 apps/api/target/
+apps/agent/target/
 
 # dependencies
 node_modules
