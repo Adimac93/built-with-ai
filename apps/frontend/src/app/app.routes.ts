@@ -29,21 +29,4 @@ export const appRoutes: Route[] = [
       },
     ],
   },
-  {
-    path: '',
-    loadComponent: () =>
-      import('./layouts/admin-layout/admin-layout').then((m) => m.AdminLayout),
-    children: [
-      {
-        path: 'users',
-        loadComponent: () =>
-          import('./pages/user-page/user-page').then((m) => m.UserPage),
-      },
-      {
-        path: 'orders',
-        loadComponent: () =>
-          import('./pages/order-page/order-page').then((m) => m.OrderPage),
-      },
-    ],
-  },
 ];

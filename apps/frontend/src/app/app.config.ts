@@ -5,7 +5,6 @@ import {
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { appRoutes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { AppConfig, ConfigProvider } from './config/config-provider';
@@ -22,6 +21,5 @@ export const appConfig: ApplicationConfig = {
       const config: AppConfig = await response.json();
       configProvider.setConfig(config);
     }),
-    provideAnimationsAsync(),
   ],
 };

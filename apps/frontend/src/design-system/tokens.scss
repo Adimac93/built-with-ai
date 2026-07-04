@@ -20,7 +20,6 @@
   --ds-color-primitive-slate-shadow-040: rgba(15, 23, 42, 0.04);
 
   /* Primitive typography */
-  --ds-font-family-admin: Roboto, 'Helvetica Neue', sans-serif;
   --ds-font-family-body: 'IBM Plex Sans', sans-serif;
   --ds-font-family-display: 'Big Shoulders Display', sans-serif;
   --ds-font-family-code: 'IBM Plex Mono', monospace;
@@ -88,31 +87,6 @@
   --ds-size-step-marker: 60px;
   --ds-motion-fast: 120ms ease;
   --ds-motion-medium: 150ms ease;
-
-  /* App semantic tokens for the Material/admin surface */
-  --ds-color-admin-bg-app: color-mix(
-    in srgb,
-    var(--mat-sys-primary) 6%,
-    var(--mat-sys-surface)
-  );
-  --ds-color-admin-bg-surface: var(--mat-sys-surface);
-  --ds-color-admin-bg-sidebar: var(--mat-sys-surface-container-low);
-  --ds-color-admin-content-primary: var(--mat-sys-on-surface);
-  --ds-color-admin-content-secondary: var(--mat-sys-on-surface-variant);
-  --ds-color-admin-brand-primary: var(--mat-sys-primary);
-  --ds-color-admin-brand-secondary: var(--mat-sys-tertiary);
-  --ds-color-admin-border: var(--mat-sys-outline-variant);
-  --ds-color-admin-danger: var(--mat-sys-error);
-  --ds-color-admin-on-danger: var(--mat-sys-on-error);
-  --ds-shadow-admin-sm:
-    0 1px 3px var(--ds-color-primitive-slate-shadow-060),
-    0 1px 2px var(--ds-color-primitive-slate-shadow-040);
-
-  /* Compatibility aliases used by existing Material/admin components. */
-  --app-surface-tint: var(--ds-color-admin-bg-app);
-  --app-radius-lg: var(--ds-radius-200);
-  --app-radius-md: var(--ds-radius-100);
-  --app-shadow-sm: var(--ds-shadow-admin-sm);
 }
 
 .heureka {

@@ -1,19 +1,8 @@
-@use '@angular/material' as mat;
 @use './design-system/tokens';
 @use './heureka';
 
 html {
   color-scheme: light dark;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$violet-palette,
-      ),
-      typography: Roboto,
-      density: 0,
-    )
-  );
 }
 
 html.light {
@@ -28,27 +17,7 @@ html,
 body {
   height: 100%;
   margin: 0;
-  font-family: var(--ds-font-family-admin);
-  background: var(--ds-color-admin-bg-app);
-  color: var(--ds-color-admin-content-primary);
-}
-
-.mat-mdc-form-field {
-  width: 100%;
-}
-
-.danger-button {
-  --mdc-filled-button-container-color: var(--ds-color-admin-danger);
-  --mdc-filled-button-label-text-color: var(--ds-color-admin-on-danger);
-  --mdc-text-button-label-text-color: var(--ds-color-admin-danger);
-  --mdc-outlined-button-label-text-color: var(--ds-color-admin-danger);
-  --mdc-outlined-button-outline-color: var(--ds-color-admin-danger);
-  --mat-icon-button-state-layer-color: var(--ds-color-admin-danger);
-  --mat-icon-color: var(--ds-color-admin-danger);
-  color: var(--ds-color-admin-danger);
-}
-
-.tertiary-button {
-  --mdc-filled-button-container-color: var(--mat-sys-tertiary);
-  --mdc-filled-button-label-text-color: var(--mat-sys-on-tertiary);
+  font-family: var(--ds-font-family-body);
+  background: var(--ds-color-bg-canvas);
+  color: var(--ds-color-content-primary);
 }
