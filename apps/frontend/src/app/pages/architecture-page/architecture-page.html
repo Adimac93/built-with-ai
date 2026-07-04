@@ -1,0 +1,59 @@
+<p class="eyebrow">Mapa systemu</p>
+<h1>Architektura</h1>
+<p class="lead">
+  Pełny przepływ od użytkownika do agenta: Angular zbiera problem, NestJS
+  pośredniczy w analizie i transkrypcji, a agent Google ADK uruchamia pipeline
+  TRIZ/SCAMPER na Google Cloud Platform.
+</p>
+
+<section class="architecture-panel" aria-labelledby="architecture-h">
+  <div class="architecture-panel__head">
+    <div>
+      <p class="architecture-panel__tag">Widok ng-diagram</p>
+      <h2 id="architecture-h">Topologia aplikacji</h2>
+    </div>
+    <p class="architecture-panel__meta">
+      Angular · NestJS · Google ADK · Vertex AI · Cloud Run · Terraform
+    </p>
+  </div>
+  @defer (on idle) {
+    <app-architecture-diagram />
+  } @placeholder {
+    <p class="architecture-panel__loading">Ładuję diagram architektury...</p>
+  } @error {
+    <p class="architecture-panel__error">
+      Nie udało się załadować diagramu. Sprawdź konsolę przeglądarki.
+    </p>
+  }
+</section>
+
+<section class="doc-section" aria-labelledby="architecture-notes-h">
+  <h2 id="architecture-notes-h">Warstwy</h2>
+  <div class="doc-grid">
+    <article class="doc-card">
+      <span class="doc-card__tag">UI</span>
+      <h3>Angular + ng-diagram</h3>
+      <p>
+        Interfejs renderuje formularz, trail rozumowania, diagram pipeline i
+        kontrolki dostępności. Konfiguracja API przychodzi z publicznego
+        <code>config.json</code>.
+      </p>
+    </article>
+    <article class="doc-card">
+      <span class="doc-card__tag">Gateway</span>
+      <h3>NestJS</h3>
+      <p>
+        API ukrywa integracje serwerowe: przekazuje <code>/solve</code> do
+        agenta i wysyła nagrania audio do Google Cloud Speech-to-Text.
+      </p>
+    </article>
+    <article class="doc-card">
+      <span class="doc-card__tag">Agent</span>
+      <h3>Google ADK</h3>
+      <p>
+        Agent łączy kroki LLM na Vertex AI z deterministycznym lookupem TRIZ,
+        SCAMPER, wyborem przez argmax i złożeniem końcowego traila.
+      </p>
+    </article>
+  </div>
+</section>

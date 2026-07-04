@@ -23,14 +23,19 @@ const SHEET_META: Record<string, SheetMeta> = {
     arkusz: 'Karta metodologii',
   },
   '/zespol': {
-    ark: 'ARK. 3/3',
+    ark: 'ARK. 4/4',
     label: 'KARTA PERSONELU',
     arkusz: 'Karta personelu',
+  },
+  '/architektura': {
+    ark: 'ARK. 3/4',
+    label: 'MAPA ARCHITEKTURY',
+    arkusz: 'Architektura',
   },
 };
 
 const DEFAULT_META: SheetMeta = {
-  ark: 'ARK. 1/3',
+  ark: 'ARK. 1/4',
   label: 'TRIZ · SCAMPER',
   arkusz: 'Analiza',
 };

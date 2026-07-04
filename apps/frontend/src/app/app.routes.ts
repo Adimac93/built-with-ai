@@ -23,6 +23,13 @@ export const appRoutes: Route[] = [
           ),
       },
       {
+        path: 'architektura',
+        loadComponent: () =>
+          import('./pages/architecture-page/architecture-page').then(
+            (m) => m.ArchitecturePage,
+          ),
+      },
+      {
         path: 'zespol',
         loadComponent: () =>
           import('./pages/team-page/team-page').then((m) => m.TeamPage),
