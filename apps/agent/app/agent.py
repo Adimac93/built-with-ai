@@ -121,19 +121,31 @@ class TrizLookupAgent(BaseAgent):
             logger.error("TRIZ lookup failed: %s", e)
             principles = []
 
+        improving_name = get_parameter_name(improving)
+        worsening_name = get_parameter_name(worsening)
+        principle_dicts = [get_principle_description(p) for p in principles]
+        principles_text = (
+            "; ".join(f"{p['number']}: {p['name']}" for p in principle_dicts)
+            or "No principles found in matrix for this pair"
+        )
+
         lookup = {
             "improving_param": improving,
-            "improving_name": get_parameter_name(improving),
+            "improving_name": improving_name,
             "worsening_param": worsening,
-            "worsening_name": get_parameter_name(worsening),
-            "principles": [get_principle_description(p) for p in principles],
+            "worsening_name": worsening_name,
+            "principles": principle_dicts,
             "principles_count": len(principles),
         }
         ctx.session.state["lookup"] = lookup
+        # Flat keys for safe ADK template injection (only identifiers work)
+        ctx.session.state["lookup_improving_name"] = improving_name
+        ctx.session.state["lookup_worsening_name"] = worsening_name
+        ctx.session.state["lookup_principles_text"] = principles_text
 
         summary = (
-            f"TRIZ lookup: {lookup['improving_name']} → {lookup['worsening_name']}, "
-            f"{len(principles)} principles found: {[p['name'] for p in lookup['principles']]}"
+            f"TRIZ lookup: {improving_name} → {worsening_name}, "
+            f"{len(principles)} principles: {principles_text}"
         )
         logger.info(summary)
         yield Event(
@@ -179,8 +191,8 @@ def create_triz_generator() -> Agent:
         instruction="""You are a TRIZ solution inventor. Generate solution candidates using TRIZ inventive principles.
 
 PROBLEM: {problem}
-CONTRADICTION: Improving "{lookup[improving_name]}" while "{lookup[worsening_name]}" worsens.
-TRIZ PRINCIPLES TO APPLY: {lookup[principles]}
+CONTRADICTION: Improving "{lookup_improving_name}" while "{lookup_worsening_name}" worsens.
+TRIZ PRINCIPLES TO APPLY: {lookup_principles_text}
 
 For EACH principle listed above, generate ONE concrete, specific solution idea.
 Each idea must:
