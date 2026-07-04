@@ -1,0 +1,124 @@
+<p class="eyebrow">Jak system myśli</p>
+<h1>Metodologia</h1>
+<p class="lead">
+  Heureka nie zgaduje — każdy pomysł ma podpisane źródło, a każda ocena
+  kryterium i uzasadnienie. Poniżej trzy metody generowania rozwiązań i trzy
+  sposoby ich oceny. Czerwonym oznaczamy to, co liczy deterministyczny kod, nie
+  model.
+</p>
+
+<section class="doc-section" aria-labelledby="gen-h">
+  <h2 id="gen-h">Metody generowania rozwiązań</h2>
+  <div class="doc-grid">
+    <article class="doc-card">
+      <span class="doc-card__tag">G-01 · klasyka wynalazczości</span>
+      <h3>TRIZ — matryca kontradykcji</h3>
+      <p>
+        Metoda Altszullera zbudowana na analizie tysięcy patentów: każdy trudny
+        problem to sprzeczność techniczna — poprawiając jeden parametr, psujesz
+        inny.
+      </p>
+      <ol>
+        <li>Problem → para parametrów (poprawiany × pogarszany) z listy 39.</li>
+        <li>Lookup w matrycy 39×39 → zasady wynalazcze (1–40).</li>
+        <li>Jeden kandydat na każdą zwróconą zasadę.</li>
+      </ol>
+      <p class="doc-card__how">
+        <b>KOD:</b> lookup w matrycy, walidacja zakresu · LLM: dobór parametrów,
+        treść pomysłu
+      </p>
+    </article>
+
+    <article class="doc-card">
+      <span class="doc-card__tag">G-02 · checklista przekształceń</span>
+      <h3>SCAMPER</h3>
+      <p>
+        Siedem operatorów, które systematycznie „przekręcają" istniejące
+        rozwiązanie: Substitute, Combine, Adapt, Modify,
+        Put&nbsp;to&nbsp;another&nbsp;use, Eliminate, Reverse.
+      </p>
+      <ol>
+        <li>Iteracja po operatorach S-C-A-M-P-E-R.</li>
+        <li>Dla każdego operatora: pytanie przekształcające problem.</li>
+        <li>Jeden kandydat na operator.</li>
+      </ol>
+      <p class="doc-card__how">
+        <b>KOD:</b> pętla operatorów · LLM: odpowiedź na pytanie operatora
+      </p>
+    </article>
+
+    <article class="doc-card">
+      <span class="doc-card__tag">G-03 · eksploracja przestrzeni</span>
+      <h3>Analiza morfologiczna</h3>
+      <p>
+        Metoda Zwicky'ego, standard w inżynierskim projektowaniu koncepcji:
+        rozłóż problem na niezależne wymiary i systematycznie kombinuj warianty.
+      </p>
+      <ol>
+        <li>
+          Problem → 3–4 wymiary (np. miejsce ingerencji, mechanizm, skala).
+        </li>
+        <li>Opcje w każdym wymiarze → iloczyn kartezjański kombinacji.</li>
+        <li>Jeden kandydat na wybraną kombinację.</li>
+      </ol>
+      <p class="doc-card__how">
+        <b>KOD:</b> budowa i selekcja kombinacji · LLM: wymiary, opis kandydata
+      </p>
+    </article>
+  </div>
+</section>
+
+<section class="doc-section" aria-labelledby="eval-h">
+  <h2 id="eval-h">Sposób ewaluacji kandydatów</h2>
+  <div class="doc-grid">
+    <article class="doc-card">
+      <span class="doc-card__tag">E-01 · domyślna</span>
+      <h3>Rubryka ważona</h3>
+      <p>
+        Każdy kandydat dostaje ocenę 0–100 w kilku kryteriach (rozwiązuje
+        kontradykcję, wykonalność, koszt, zgodność z ograniczeniami problemu) —
+        każde kryterium ma wagę.
+      </p>
+      <ul>
+        <li>Wynik łączny = suma ważona ocen.</li>
+        <li>Każda ocena ma pisemne uzasadnienie w trailu.</li>
+      </ul>
+      <p class="doc-card__how">
+        <b>KOD:</b> wagi, suma, argmax wyboru · LLM: oceny z uzasadnieniem
+      </p>
+    </article>
+
+    <article class="doc-card">
+      <span class="doc-card__tag">E-02 · względem odniesienia</span>
+      <h3>Macierz Pugha</h3>
+      <p>
+        Klasyka oceny koncepcji w R&D: jeden kandydat zostaje punktem
+        odniesienia (datum), a resztę porównuje się do niego w każdym kryterium.
+      </p>
+      <ul>
+        <li>Oceny tylko: lepszy (+), równy (0), gorszy (−).</li>
+        <li>Wynik = suma plusów i minusów względem datum.</li>
+      </ul>
+      <p class="doc-card__how">
+        <b>KOD:</b> zliczanie +/0/−, ranking · LLM: werdykt per porównanie
+      </p>
+    </article>
+
+    <article class="doc-card">
+      <span class="doc-card__tag">E-03 · każdy z każdym</span>
+      <h3>Porównanie parami</h3>
+      <p>
+        Najprostsza w interpretacji: każdy kandydat staje w szranki z każdym
+        innym, a w pojedynku wygrywa ten, który lepiej odpowiada na problem.
+      </p>
+      <ul>
+        <li>Przy n kandydatach: n·(n−1)/2 pojedynków.</li>
+        <li>Ranking = liczba wygranych pojedynków.</li>
+      </ul>
+      <p class="doc-card__how">
+        <b>KOD:</b> harmonogram par, zliczanie wygranych · LLM: rozstrzygnięcie
+        pojedynku
+      </p>
+    </article>
+  </div>
+</section>

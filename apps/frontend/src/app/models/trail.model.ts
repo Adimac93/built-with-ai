@@ -1,0 +1,52 @@
+export type GenerationMethod = 'triz' | 'scamper' | 'morph';
+/** Druga metoda generowania — TRIZ jest zawsze włączony (wymóg zadania). */
+export type SecondMethod = Exclude<GenerationMethod, 'triz'>;
+export type EvalMode = 'rubryka' | 'pugh' | 'pary';
+
+export const METHOD_LABELS: Record<GenerationMethod, string> = {
+  triz: 'TRIZ',
+  scamper: 'SCAMPER',
+  morph: 'Analiza morfologiczna',
+};
+
+export const EVAL_LABELS: Record<EvalMode, string> = {
+  rubryka: 'Rubryka ważona',
+  pugh: 'Macierz Pugha',
+  pary: 'Porównanie parami',
+};
+
+export interface TrailCandidate {
+  readonly method: GenerationMethod;
+  readonly source: string;
+  readonly name: string;
+  readonly description: string;
+  readonly score: number;
+}
+
+export interface TrailParameter {
+  readonly tag: string;
+  readonly name: string;
+}
+
+export interface TrailContradiction {
+  readonly better: TrailParameter;
+  readonly worse: TrailParameter;
+  readonly principles: string;
+}
+
+export interface MethodGroup {
+  readonly method: GenerationMethod;
+  readonly label: string;
+  readonly candidates: readonly TrailCandidate[];
+}
+
+export interface Trail {
+  readonly problem: string;
+  readonly secondMethod: SecondMethod;
+  readonly evalMode: EvalMode;
+  readonly contradiction: TrailContradiction;
+  readonly groups: readonly MethodGroup[];
+  readonly ranked: readonly TrailCandidate[];
+  readonly winner: TrailCandidate;
+  readonly candidateCount: number;
+}

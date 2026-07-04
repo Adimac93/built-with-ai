@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+.form-card {
+  max-width: 560px;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--mat-sys-surface);
+}
+
+.form-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  background: color-mix(in srgb, var(--mat-sys-tertiary) 6%, transparent);
+}
+
+.form-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--mat-sys-tertiary) 18%, transparent);
+  color: var(--mat-sys-tertiary);
+}
+
+.order-form {
+  display: block;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem 1.5rem 0;
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+.form-actions {
+  padding: 0.5rem 1rem 1rem;
+  gap: 0.5rem;
+}
