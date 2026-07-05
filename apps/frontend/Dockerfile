@@ -4,7 +4,7 @@ FROM docker.io/nginx:alpine
 ENV PORT=8080
 
 COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf.template
-COPY dist/apps/frontend/browser /usr/share/nginx/html
+COPY apps/frontend/dist/web /usr/share/nginx/html
 
 # Substitute $PORT in the nginx config template and start nginx
 CMD ["/bin/sh", "-c", "envsubst '${PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]

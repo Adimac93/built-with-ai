@@ -1,0 +1,276 @@
+/* Hand-rolled diagram layer (replaces ng-diagram): absolutely positioned
+   HTML nodes over an SVG edge layer, dotted canvas background, scrollable. */
+
+.diagram-scroll {
+  overflow: auto;
+  background: var(--ds-color-bg-canvas);
+  background-image: radial-gradient(var(--ds-color-border-muted) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.diagram-scroll--pipeline {
+  height: 500px;
+}
+
+.diagram-scroll--architecture {
+  height: min(72vh, 720px);
+  min-height: 560px;
+  border-top: 1px dashed var(--ds-color-border-muted);
+}
+
+@media (max-width: 720px) {
+  .diagram-scroll--architecture {
+    height: 680px;
+    min-height: 680px;
+  }
+}
+
+.diagram-canvas {
+  position: relative;
+}
+
+.diagram-canvas > svg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.diagram-canvas .edge {
+  stroke: var(--ds-color-content-secondary);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.diagram-node {
+  position: absolute;
+}
+
+/* ── Pipeline agent node (port of AgentNodeComponent styles) ── */
+
+.agent-node {
+  font-family: var(--ds-font-family-code, 'IBM Plex Mono', monospace);
+  border: var(--ds-border-default);
+  background: var(--ds-color-bg-card);
+  padding: 10px 12px;
+  width: 180px;
+  box-sizing: border-box;
+}
+
+.agent-node--baseagent {
+  border-color: var(--ds-color-content-secondary);
+}
+
+.agent-node--active {
+  border-color: var(--ds-component-diagram-active-border) !important;
+  background: color-mix(
+    in srgb,
+    var(--ds-component-diagram-active-bg) 15%,
+    var(--ds-color-bg-card)
+  );
+  animation: node-pulse 1.4s ease-in-out infinite;
+}
+
+.agent-node--done {
+  border-color: var(--ds-color-content-secondary);
+  opacity: 0.55;
+}
+
+@keyframes node-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ds-component-diagram-active-shadow) 0%, transparent); }
+  50%       { box-shadow: 0 0 0 4px color-mix(in srgb, var(--ds-component-diagram-active-shadow) 28%, transparent); }
+}
+
+.agent-node__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.agent-node__step {
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ds-color-content-secondary);
+}
+
+.agent-node__type {
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ds-color-content-secondary);
+  background: var(--ds-color-bg-canvas);
+  padding: 1px 5px;
+}
+
+.agent-node--baseagent .agent-node__type {
+  color: var(--ds-color-accent-danger);
+}
+
+.agent-node__name {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ds-color-content-primary);
+  word-break: break-all;
+  margin-bottom: 6px;
+}
+
+.agent-node__prompt summary {
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ds-color-content-secondary);
+  cursor: pointer;
+  list-style: none;
+  padding: 3px 0;
+  border-top: var(--ds-border-muted-dashed);
+}
+.agent-node__prompt summary::-webkit-details-marker { display: none; }
+.agent-node__prompt summary::before { content: '▶ '; font-size: 0.55em; }
+.agent-node__prompt[open] summary::before { content: '▼ '; }
+
+.agent-node__prompt-text {
+  margin-top: 5px;
+  font-size: 0.6rem;
+  line-height: 1.5;
+  color: var(--ds-color-content-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--ds-color-bg-canvas);
+  border: var(--ds-border-muted);
+  padding: 6px 8px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+/* ── ParallelAgent group (port of ParallelGroupComponent styles) ── */
+
+.par-group {
+  font-family: var(--ds-font-family-code, 'IBM Plex Mono', monospace);
+  border: 1.5px dashed var(--ds-color-border-strong);
+  background: color-mix(in srgb, var(--ds-color-bg-canvas) 60%, transparent);
+  padding: 10px 12px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.par-group__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.par-group__step {
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ds-color-content-secondary);
+}
+
+.par-group__type {
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ds-color-content-primary);
+  background: var(--ds-color-bg-canvas);
+  padding: 1px 5px;
+}
+
+.par-group__name {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ds-color-content-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.par-group--active {
+  border-color: var(--ds-component-diagram-active-border) !important;
+  background: color-mix(in srgb, var(--ds-component-diagram-active-bg) 12%, transparent);
+  animation: group-pulse 1.4s ease-in-out infinite;
+}
+
+.par-group--done {
+  border-color: var(--ds-color-content-secondary);
+  opacity: 0.55;
+}
+
+@keyframes group-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ds-component-diagram-active-shadow) 0%, transparent); }
+  50%       { box-shadow: 0 0 0 5px color-mix(in srgb, var(--ds-component-diagram-active-shadow) 22%, transparent); }
+}
+
+/* ── Architecture node (port of ArchitectureNodeComponent styles) ── */
+
+.arch-node {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 210px;
+  min-height: 104px;
+  padding: 11px 13px;
+  border: var(--ds-border-default);
+  background: var(--ds-color-bg-card);
+  color: var(--ds-color-content-primary);
+  font-family: var(--ds-font-family-body);
+  box-sizing: border-box;
+}
+
+.arch-node--client {
+  border-color: var(--ds-color-accent-danger);
+}
+
+.arch-node--api,
+.arch-node--agent {
+  background: color-mix(in srgb, var(--ds-color-bg-card) 88%, var(--ds-color-primitive-amber-300));
+}
+
+.arch-node--cloud {
+  background: var(--ds-color-bg-selected);
+  color: var(--ds-color-content-inverse);
+  border-color: var(--ds-color-bg-selected);
+}
+
+.arch-node--tooling {
+  border-style: dashed;
+  background: var(--ds-color-bg-canvas);
+}
+
+.arch-node--data {
+  background: color-mix(in srgb, var(--ds-color-bg-card) 82%, var(--ds-color-primitive-red-100));
+}
+
+.arch-node__eyebrow {
+  margin: 0 0 4px;
+  font-family: var(--ds-font-family-code);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: currentColor;
+  opacity: 0.72;
+}
+
+.arch-node__title {
+  margin: 0;
+  font-family: var(--ds-font-family-display);
+  font-size: 1.24rem;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.arch-node__body {
+  margin: 7px 0 0;
+  font-size: 0.76rem;
+  line-height: 1.34;
+  color: currentColor;
+  opacity: 0.86;
+}

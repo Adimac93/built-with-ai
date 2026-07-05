@@ -1,0 +1,1349 @@
+@charset "UTF-8";
+/* Heureka design tokens
+   Layers follow the day-2 design-system model:
+   primitive -> semantic -> contextual/component. */
+:root {
+  /* Primitive colors */
+  --ds-color-primitive-sage-50: #fafbf6;
+  --ds-color-primitive-sage-100: #f1f4ec;
+  --ds-color-primitive-sage-200: #d6decb;
+  --ds-color-primitive-sage-500: #8f9c8c;
+  --ds-color-primitive-sage-700: #5a685a;
+  --ds-color-primitive-sage-950: #1b2b21;
+  --ds-color-primitive-red-600: #c93a26;
+  --ds-color-primitive-red-100: #f6e8e4;
+  --ds-color-primitive-red-200: #f2b8ad;
+  --ds-color-primitive-amber-300: #f5d97a;
+  --ds-color-primitive-amber-700: #b07d1a;
+  --ds-color-primitive-white-alpha-180: rgba(255, 255, 255, 0.18);
+  --ds-color-primitive-slate-shadow-060: rgba(15, 23, 42, 0.06);
+  --ds-color-primitive-slate-shadow-040: rgba(15, 23, 42, 0.04);
+  /* Primitive typography */
+  --ds-font-family-body: 'IBM Plex Sans', sans-serif;
+  --ds-font-family-display: 'Big Shoulders Display', sans-serif;
+  --ds-font-family-code: 'IBM Plex Mono', monospace;
+  --ds-font-weight-regular: 400;
+  --ds-font-weight-medium: 500;
+  --ds-font-weight-semibold: 600;
+  --ds-font-weight-bold: 800;
+  --ds-line-height-body: 1.55;
+  --ds-line-height-tight: 1.1;
+  /* Primitive type scale */
+  --ds-font-size-50: 0.58rem;
+  --ds-font-size-75: 0.6rem;
+  --ds-font-size-100: 0.62rem;
+  --ds-font-size-150: 0.68rem;
+  --ds-font-size-200: 0.7rem;
+  --ds-font-size-250: 0.72rem;
+  --ds-font-size-300: 0.75rem;
+  --ds-font-size-350: 0.78rem;
+  --ds-font-size-400: 0.8rem;
+  --ds-font-size-500: 0.9rem;
+  --ds-font-size-600: 0.95rem;
+  --ds-font-size-700: 1rem;
+  --ds-font-size-800: 1.05rem;
+  --ds-font-size-900: 1.25rem;
+  --ds-font-size-1000: 1.5rem;
+  --ds-font-size-1100: 1.9rem;
+  --ds-font-size-1200: 2.2rem;
+  /* Primitive spacing scale */
+  --ds-space-0: 0;
+  --ds-space-25: 1px;
+  --ds-space-50: 2px;
+  --ds-space-75: 3px;
+  --ds-space-100: 4px;
+  --ds-space-150: 5px;
+  --ds-space-200: 6px;
+  --ds-space-300: 8px;
+  --ds-space-350: 10px;
+  --ds-space-400: 12px;
+  --ds-space-500: 14px;
+  --ds-space-600: 16px;
+  --ds-space-700: 18px;
+  --ds-space-800: 20px;
+  --ds-space-900: 24px;
+  --ds-space-1000: 28px;
+  --ds-space-1100: 32px;
+  --ds-space-1200: 40px;
+  --ds-space-1300: 48px;
+  --ds-space-1400: 64px;
+  --ds-space-1500: 72px;
+  --ds-space-1600: 88px;
+  /* Primitive geometry and motion */
+  --ds-border-width-100: 1px;
+  --ds-border-width-150: 1.5px;
+  --ds-border-width-300: 3px;
+  --ds-radius-50: 2px;
+  --ds-radius-100: 10px;
+  --ds-radius-150: 12px;
+  --ds-radius-200: 14px;
+  --ds-radius-pill: 999px;
+  --ds-grid-size-engineering: 24px;
+  --ds-size-control-sm: 40px;
+  --ds-size-step-marker: 60px;
+  --ds-motion-fast: 120ms ease;
+  --ds-motion-medium: 150ms ease;
+}
+
+.heureka {
+  /* Heureka semantic/contextual tokens */
+  --ds-color-bg-canvas: var(--ds-color-primitive-sage-100);
+  --ds-color-bg-card: var(--ds-color-primitive-sage-50);
+  --ds-color-bg-subtle: var(--ds-color-primitive-sage-100);
+  --ds-color-bg-selected: var(--ds-color-primitive-sage-950);
+  --ds-color-bg-score-win: var(--ds-color-primitive-red-100);
+  --ds-color-grid-line: var(--ds-color-primitive-sage-200);
+  --ds-color-content-primary: var(--ds-color-primitive-sage-950);
+  --ds-color-content-secondary: var(--ds-color-primitive-sage-700);
+  --ds-color-content-inverse: var(--ds-color-primitive-sage-50);
+  --ds-color-content-inverse-accent: var(--ds-color-primitive-red-200);
+  --ds-color-accent-danger: var(--ds-color-primitive-red-600);
+  --ds-color-border-strong: var(--ds-color-primitive-sage-950);
+  --ds-color-border-muted: var(--ds-color-primitive-sage-500);
+  --ds-color-focus-ring: var(--ds-color-primitive-red-600);
+  --ds-border-default: var(--ds-border-width-150) solid var(--ds-color-border-strong);
+  --ds-border-muted: var(--ds-border-width-100) solid var(--ds-color-border-muted);
+  --ds-border-muted-dashed: var(--ds-border-width-100) dashed var(--ds-color-border-muted);
+  --ds-focus-outline: var(--ds-border-width-300) solid var(--ds-color-focus-ring);
+  --ds-sheet-shadow:
+    0 0 0 5px var(--ds-color-bg-card),
+    0 0 0 6.5px var(--ds-color-border-strong);
+  --ds-component-button-primary-bg: var(--ds-color-bg-selected);
+  --ds-component-button-primary-fg: var(--ds-color-content-inverse);
+  --ds-component-button-hover-bg: var(--ds-color-accent-danger);
+  --ds-component-chip-bg: var(--ds-color-bg-card);
+  --ds-component-chip-selected-bg: var(--ds-color-bg-selected);
+  --ds-component-note-bg: var(--ds-color-bg-subtle);
+  --ds-component-diagram-active-border: var(--ds-color-primitive-amber-700);
+  --ds-component-diagram-active-bg: var(--ds-color-primitive-amber-300);
+  --ds-component-diagram-active-shadow: var(--ds-color-primitive-amber-700);
+  /* Compatibility aliases retained for the existing Heureka SCSS and diagram nodes. */
+  --paper: var(--ds-color-bg-canvas);
+  --grid: var(--ds-color-grid-line);
+  --ink: var(--ds-color-content-primary);
+  --graphite: var(--ds-color-content-secondary);
+  --card: var(--ds-color-bg-card);
+  --red: var(--ds-color-accent-danger);
+  --line: var(--ds-color-border-muted);
+}
+
+/* High-contrast accessibility mode — toggled via .a11y-contrast on <html>.
+   Overrides the Heureka semantic tokens so every alias above inherits the
+   stronger palette (pure black/white, solid borders, no grid noise). */
+.a11y-contrast .heureka {
+  --ds-color-bg-canvas: #ffffff;
+  --ds-color-bg-card: #ffffff;
+  --ds-color-bg-subtle: #ffffff;
+  --ds-color-bg-score-win: #ffffff;
+  --ds-color-grid-line: transparent;
+  --ds-color-content-primary: #000000;
+  --ds-color-content-secondary: #000000;
+  --ds-color-content-inverse: #ffffff;
+  --ds-color-border-strong: #000000;
+  --ds-color-border-muted: #000000;
+  --ds-color-accent-danger: #b3120b;
+  --ds-color-focus-ring: #b3120b;
+}
+
+/* Dark mode — reversed palette, toggled via .a11y-dark on <html>.
+   Overrides the same semantic tokens so aliases + diagram nodes follow. */
+html.a11y-dark {
+  color-scheme: dark;
+  background: #14201a;
+}
+
+.a11y-dark .heureka {
+  --ds-color-bg-canvas: #14201a;
+  --ds-color-bg-card: #1b2b21;
+  --ds-color-bg-subtle: #1b2b21;
+  --ds-color-bg-score-win: #2e1a15;
+  --ds-color-grid-line: #24352b;
+  --ds-color-content-primary: #f1f4ec;
+  --ds-color-content-secondary: #b9c4b5;
+  --ds-color-content-inverse: #14201a;
+  --ds-color-content-inverse-accent: #f2b8ad;
+  --ds-color-border-strong: #e8ece1;
+  --ds-color-border-muted: #6f7d6d;
+  --ds-color-bg-selected: #f1f4ec;
+  --ds-color-accent-danger: #f2705a;
+  --ds-color-focus-ring: #f2705a;
+}
+
+/* Dark + high contrast — pure black/white inversion. */
+.a11y-dark.a11y-contrast .heureka {
+  --ds-color-bg-canvas: #000000;
+  --ds-color-bg-card: #000000;
+  --ds-color-bg-subtle: #000000;
+  --ds-color-bg-score-win: #000000;
+  --ds-color-grid-line: transparent;
+  --ds-color-content-primary: #ffffff;
+  --ds-color-content-secondary: #ffffff;
+  --ds-color-content-inverse: #000000;
+  --ds-color-border-strong: #ffffff;
+  --ds-color-border-muted: #ffffff;
+  --ds-color-bg-selected: #ffffff;
+  --ds-color-accent-danger: #ff8a75;
+  --ds-color-focus-ring: #ff8a75;
+}
+
+/* Heureka — style „arkusza inżynierskiego".
+   Zeskope'owane pod .heureka (host HeurekaLayout), żeby nie kolidowały
+   z motywem Material na stronach /users i /orders. */
+.heureka {
+  display: block;
+  min-height: 100dvh;
+  font-family: var(--ds-font-family-body);
+  font-size: 1rem;
+  color: var(--ds-color-content-primary);
+  background: linear-gradient(var(--ds-color-grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--ds-color-grid-line) 1px, transparent 1px), var(--ds-color-bg-canvas);
+  background-size: var(--ds-grid-size-engineering) var(--ds-grid-size-engineering);
+  line-height: var(--ds-line-height-body);
+  padding: var(--ds-space-900);
+}
+.heureka *,
+.heureka *::before,
+.heureka *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+.heureka .skip {
+  position: absolute;
+  left: -999px;
+  top: var(--ds-space-300);
+  background: var(--ds-color-bg-selected);
+  color: var(--ds-color-content-inverse);
+  padding: var(--ds-space-300) var(--ds-space-600);
+  z-index: 10;
+}
+.heureka .skip:focus {
+  left: var(--ds-space-1100);
+}
+.heureka :focus-visible {
+  outline: var(--ds-focus-outline);
+  outline-offset: var(--ds-space-50);
+}
+.heureka {
+  /* ── arkusz ── */
+}
+.heureka .sheet {
+  max-width: 1080px;
+  margin: 0 auto;
+  background: var(--ds-color-bg-card);
+  border: var(--ds-border-default);
+  box-shadow: var(--ds-sheet-shadow);
+}
+.heureka .sheet__inner {
+  padding: clamp(24px, 5vw, 64px);
+}
+.heureka {
+  /* ── nagłówek arkusza + zakładki ── */
+}
+.heureka .masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-bottom: 1.5px solid var(--ink);
+  padding-bottom: 14px;
+  margin-bottom: clamp(32px, 6vw, 72px);
+}
+.heureka .masthead__brand {
+  font-family: "Big Shoulders Display", sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.heureka .masthead__brand span {
+  color: var(--red);
+}
+.heureka .nav {
+  display: flex;
+  gap: 0;
+}
+.heureka .nav a {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  border: 1.5px solid var(--ink);
+  border-right-width: 0;
+  padding: 8px 20px;
+}
+.heureka .nav a:last-child {
+  border-right-width: 1.5px;
+}
+.heureka .nav a[aria-current=page] {
+  background: var(--ink);
+  color: var(--card);
+}
+.heureka .nav a:hover:not([aria-current]) {
+  background: var(--paper);
+}
+.heureka .masthead__meta {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--graphite);
+  text-align: right;
+}
+.heureka {
+  /* ── kontrolki dostępności ── */
+}
+.heureka .a11y {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.heureka .a11y__group {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0;
+}
+.heureka .a11y__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--card);
+  border: 1.5px solid var(--ink);
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.heureka .a11y__btn:hover:not([disabled]) {
+  background: var(--paper);
+}
+.heureka .a11y__btn--on {
+  background: var(--ink);
+  color: var(--card);
+}
+.heureka {
+  /* Keep active buttons legible on hover — the base hover swaps only the
+     background, which would hide the light label on a light surface. */
+}
+.heureka .a11y__btn--on:hover:not([disabled]) {
+  background: var(--red);
+  color: #ffffff;
+}
+.heureka .a11y__btn--icon {
+  padding: 6px 10px;
+}
+.heureka .a11y__group .a11y__btn + .a11y__level,
+.heureka .a11y__group .a11y__level + .a11y__btn {
+  border-left-width: 0;
+}
+.heureka .a11y__btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.heureka .a11y__level {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  color: var(--graphite);
+  background: var(--card);
+  border: 1.5px solid var(--ink);
+}
+.heureka {
+  /* ── hero + formularz ── */
+}
+.heureka .eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  margin-bottom: 16px;
+}
+.heureka h1 {
+  font-family: "Big Shoulders Display", sans-serif;
+  font-weight: 800;
+  font-size: clamp(3rem, 8vw, 5.6rem);
+  line-height: 0.95;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  max-width: 16ch;
+}
+.heureka .lead {
+  max-width: 56ch;
+  margin: 20px 0 40px;
+  color: var(--graphite);
+  font-size: 1.05rem;
+}
+.heureka .form {
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
+}
+.heureka .form__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--ink);
+  padding: 10px 16px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.heureka .form__head-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.heureka .mic-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 32px;
+  border: 1.5px solid var(--ink);
+  background: var(--card);
+  color: var(--ink);
+  padding: 6px 10px;
+  font: inherit;
+  cursor: pointer;
+}
+.heureka .mic-btn:hover {
+  background: var(--paper);
+}
+.heureka .mic-btn--recording {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--card);
+}
+.heureka .mic-btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.heureka .mic-btn .material-icons {
+  font-family: "Material Icons";
+  font-size: 1rem;
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.heureka .form label {
+  font-weight: 500;
+}
+.heureka .form textarea {
+  display: block;
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  border: 0;
+  background: transparent;
+  padding: 16px;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+.heureka .form textarea::placeholder {
+  color: var(--graphite);
+  opacity: 0.85;
+}
+.heureka .form__speech-status {
+  border-top: 1px dashed var(--line);
+  padding: 10px 16px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.76rem;
+  color: var(--graphite);
+}
+.heureka {
+  /* opcje analizy */
+}
+.heureka .form__options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 1px dashed var(--line);
+}
+.heureka .opt {
+  border: 0;
+  padding: 14px 16px;
+}
+.heureka .opt + .opt {
+  border-left: 1px dashed var(--line);
+}
+.heureka .opt legend,
+.heureka .opt__legend {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  padding: 0;
+  margin-bottom: 10px;
+  float: left;
+  width: 100%;
+}
+.heureka .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  clear: both;
+}
+.heureka .chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  border: 1.5px solid var(--ink);
+  background: var(--card);
+  padding: 6px 14px;
+  cursor: pointer;
+  user-select: none;
+}
+.heureka .chip input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
+}
+.heureka .chip:has(input:checked) {
+  background: var(--ink);
+  color: var(--card);
+}
+.heureka .chip:has(input:focus-visible) {
+  outline: 3px solid var(--red);
+  outline-offset: 2px;
+}
+.heureka .chip--fixed {
+  background: var(--ink);
+  color: var(--card);
+  cursor: default;
+}
+.heureka .chip__req {
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  padding: 1px 6px;
+}
+.heureka .form__error {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  color: var(--red);
+  border-top: 1px dashed var(--line);
+  padding: 10px 16px;
+  margin: 0;
+}
+.heureka .form__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  border-top: 1px dashed var(--line);
+  padding: 12px 16px;
+  flex-wrap: wrap;
+}
+.heureka .form__hint {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--graphite);
+}
+.heureka .btn {
+  font-family: "Big Shoulders Display", sans-serif;
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--card);
+  border: 1.5px solid var(--ink);
+  padding: 12px 28px;
+  cursor: pointer;
+}
+.heureka .btn:hover {
+  background: var(--red);
+  border-color: var(--red);
+}
+.heureka .btn[disabled] {
+  opacity: 0.55;
+  cursor: progress;
+}
+.heureka .btn[disabled]:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.heureka {
+  /* ── wyniki ── */
+}
+.heureka .results {
+  display: block;
+  margin-top: clamp(48px, 8vw, 88px);
+}
+.heureka .results__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-bottom: 1.5px solid var(--ink);
+  padding-bottom: 8px;
+  margin-bottom: 28px;
+}
+.heureka .results__head h2 {
+  font-family: "Big Shoulders Display", sans-serif;
+  font-weight: 800;
+  font-size: 2.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.heureka .results__head h2:focus-visible {
+  outline-offset: 6px;
+}
+.heureka .results__status {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--graphite);
+}
+.heureka .empty {
+  border: 1.5px dashed var(--line);
+  padding: 32px 24px;
+  text-align: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  color: var(--graphite);
+}
+.heureka {
+  /* ── loader (oczekiwanie na silnik) ── */
+}
+.heureka .loader {
+  border: 1.5px dashed var(--line);
+  padding: 48px 24px;
+  display: grid;
+  place-items: center;
+  gap: 16px;
+}
+.heureka .loader__spin,
+.heureka .btn__spin {
+  display: inline-block;
+  border-radius: 50%;
+  border: 3px solid var(--line);
+  border-top-color: var(--red);
+  animation: heureka-spin 0.9s linear infinite;
+}
+.heureka .loader__spin {
+  width: 44px;
+  height: 44px;
+}
+.heureka .btn__spin {
+  width: 13px;
+  height: 13px;
+  border-width: 2px;
+  border-color: rgba(250, 251, 246, 0.35);
+  border-top-color: var(--card);
+  vertical-align: -2px;
+  margin-right: 4px;
+}
+.heureka .loader__label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  color: var(--graphite);
+}
+@media (prefers-reduced-motion: reduce) {
+  .heureka .loader__spin,
+  .heureka .btn__spin {
+    animation: none;
+    border-color: var(--red);
+  }
+}
+.heureka {
+  /* ── trail ── */
+}
+.heureka .trail {
+  position: relative;
+}
+.heureka .trail::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 29px;
+  border-left: 1.5px solid var(--ink);
+}
+.heureka .step {
+  position: relative;
+  padding: 0 0 clamp(40px, 6vw, 64px) 84px;
+}
+.heureka .step:last-child {
+  padding-bottom: 0;
+}
+.heureka .step__no {
+  position: absolute;
+  left: 0;
+  top: -6px;
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  background: var(--card);
+  border: 1.5px solid var(--ink);
+  font-family: "Big Shoulders Display", sans-serif;
+  font-weight: 800;
+  font-size: 1.9rem;
+}
+.heureka .step__kicker {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  margin-bottom: 4px;
+}
+.heureka .step h3 {
+  font-family: "Big Shoulders Display", sans-serif;
+  font-weight: 800;
+  font-size: 1.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 14px;
+}
+.heureka .note {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  padding: 14px 18px;
+  max-width: 64ch;
+  font-size: 0.95rem;
+}
+.heureka {
+  /* kontradykcja */
+}
+.heureka .contradiction {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.heureka .param {
+  border: 1.5px solid var(--ink);
+  background: var(--card);
+  padding: 12px 16px;
+  flex: 1;
+  min-width: 210px;
+}
+.heureka .param__tag {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--graphite);
+}
+.heureka .param__name {
+  font-weight: 600;
+}
+.heureka .param--worse .param__tag::after {
+  content: " ↓ pogarsza się";
+  color: var(--red);
+}
+.heureka .param--better .param__tag::after {
+  content: " ↑ poprawiamy";
+}
+.heureka .vs {
+  align-self: center;
+  font-family: "Big Shoulders Display", sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+}
+.heureka .matrix {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+  background: var(--ink);
+  color: var(--card);
+  display: inline-block;
+  padding: 8px 14px;
+}
+.heureka .matrix b {
+  color: var(--ds-color-content-inverse-accent);
+  font-weight: 500;
+}
+.heureka {
+  /* kandydaci */
+}
+.heureka .methods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+.heureka .method__title {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border-bottom: 1.5px solid var(--ink);
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+}
+.heureka .cand {
+  border: 1px solid var(--line);
+  background: var(--card);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.heureka .cand__src {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  color: var(--graphite);
+  display: block;
+  margin-bottom: 4px;
+}
+.heureka .cand__name {
+  font-weight: 600;
+}
+.heureka .cand p + p {
+  font-size: 0.88rem;
+  color: var(--graphite);
+  margin-top: 4px;
+}
+.heureka {
+  /* ewaluacja */
+}
+.heureka .scores {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.heureka .scores th,
+.heureka .scores td {
+  text-align: left;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.heureka .scores th {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  font-weight: 500;
+}
+.heureka .scores td:last-child,
+.heureka .scores th:last-child {
+  text-align: right;
+}
+.heureka .scores__result {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.heureka .scores__track {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 10px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+.heureka .bar {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+}
+.heureka .scores tr.win td {
+  background: var(--ds-color-bg-score-win);
+}
+.heureka .score {
+  flex: 0 0 auto;
+  min-width: 4ch;
+  text-align: right;
+  font-family: "IBM Plex Mono", monospace;
+}
+.heureka {
+  /* wybór */
+}
+.heureka .choice {
+  border: 1.5px solid var(--ink);
+  background: var(--card);
+  padding: 24px 28px;
+  position: relative;
+  max-width: 640px;
+}
+.heureka .choice h4 {
+  font-family: "Big Shoulders Display", sans-serif;
+  font-weight: 800;
+  font-size: 1.7rem;
+  text-transform: uppercase;
+}
+.heureka .choice__src {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  margin-bottom: 6px;
+}
+.heureka .choice__idea {
+  margin-top: 8px;
+  font-size: 1rem;
+  max-width: 60ch;
+}
+.heureka .choice__why {
+  border-top: 1px dashed var(--line);
+  margin-top: 18px;
+  padding-top: 14px;
+}
+.heureka .choice__why h5 {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  margin-bottom: 10px;
+}
+.heureka .choice__why ul {
+  padding-left: 20px;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+.heureka .choice__why li {
+  margin-bottom: 6px;
+  max-width: 58ch;
+}
+.heureka .choice__why b {
+  color: var(--red);
+}
+.heureka .choice__breakdown-title {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  margin: 12px 0 6px;
+}
+.heureka .choice__breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.heureka .choice__breakdown > div {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  padding: 4px 10px;
+  font-size: 0.8rem;
+}
+.heureka .choice__breakdown dt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  color: var(--graphite);
+}
+.heureka .choice__breakdown dd {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+}
+.heureka .stamp {
+  position: absolute;
+  right: 22px;
+  top: -18px;
+  transform: rotate(-7deg);
+  font-family: "Big Shoulders Display", sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: 0.2em;
+  color: var(--red);
+  border: 3px double var(--red);
+  padding: 4px 18px;
+  background: var(--card);
+  text-transform: uppercase;
+}
+.heureka {
+  /* ── topologia pipeline ── */
+}
+.heureka .pipeline-section {
+  margin-top: clamp(40px, 6vw, 64px);
+  border: 1.5px solid var(--ink);
+  background: var(--card);
+}
+.heureka .pipeline__drawer[open] .pipeline__trigger::before {
+  transform: rotate(90deg);
+}
+.heureka .pipeline__trigger {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 11px 20px;
+  cursor: pointer;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  list-style: none;
+  user-select: none;
+}
+.heureka .pipeline__trigger::-webkit-details-marker {
+  display: none;
+}
+.heureka .pipeline__trigger::before {
+  content: "▶";
+  font-size: 0.6em;
+  transition: transform 0.15s;
+  margin-right: 6px;
+}
+.heureka .pipeline__meta {
+  font-size: 0.68rem;
+  color: var(--graphite);
+  letter-spacing: 0.12em;
+  font-weight: 400;
+}
+.heureka .pipeline__diagram-wrap {
+  border-top: 1px dashed var(--line);
+  background: var(--paper);
+}
+.heureka .pipeline__error {
+  padding: var(--ds-space-600);
+  font-family: var(--ds-font-family-code);
+  font-size: var(--ds-font-size-400);
+  color: var(--ds-color-accent-danger);
+}
+.heureka {
+  /* ── architektura aplikacji ── */
+}
+.heureka .architecture-panel {
+  margin-top: clamp(36px, 6vw, 64px);
+  border: 1.5px solid var(--ink);
+  background: var(--card);
+}
+.heureka .architecture-panel__head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 14px 20px;
+}
+.heureka .architecture-panel__tag,
+.heureka .architecture-panel__meta,
+.heureka .architecture-panel__loading,
+.heureka .architecture-panel__error {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--graphite);
+}
+.heureka .architecture-panel__head h2 {
+  font-family: "Big Shoulders Display", sans-serif;
+  font-size: 2rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.heureka .architecture-panel__meta {
+  max-width: 54ch;
+  text-align: right;
+}
+.heureka .architecture-panel__loading,
+.heureka .architecture-panel__error {
+  border-top: 1px dashed var(--line);
+  padding: 28px 20px;
+}
+.heureka .architecture-panel__error {
+  color: var(--red);
+}
+.heureka {
+  /* ── popup pipeline w trakcie analizy ── */
+}
+.heureka .pipeline-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 48px);
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+  backdrop-filter: blur(2px);
+  animation: pipeline-modal-in 0.18s ease-out;
+}
+@keyframes pipeline-modal-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.heureka .pipeline-modal__panel {
+  display: flex;
+  flex-direction: column;
+  width: min(1100px, 100%);
+  height: min(72vh, 100%);
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 0 18px 48px color-mix(in srgb, var(--ink) 45%, transparent);
+}
+.heureka .pipeline-modal__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 11px 20px;
+  border-bottom: 1px dashed var(--line);
+  background: var(--card);
+  font-family: "IBM Plex Mono", monospace;
+}
+.heureka .pipeline-modal__title {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.heureka .pipeline-modal__status {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--graphite);
+}
+.heureka .pipeline-modal__body {
+  flex: 1;
+  min-height: 0;
+}
+.heureka .pipeline-modal__body app-pipeline-diagram {
+  display: flex;
+  height: 100%;
+}
+.heureka {
+  /* ── metodologia ── */
+}
+.heureka .doc-section {
+  display: block;
+  margin-top: clamp(40px, 6vw, 64px);
+}
+.heureka .doc-section h2 {
+  font-family: "Big Shoulders Display", sans-serif;
+  font-weight: 800;
+  font-size: 2.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1.5px solid var(--ink);
+  padding-bottom: 8px;
+  margin-bottom: 24px;
+}
+.heureka .doc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+.heureka .doc-card {
+  border: 1.5px solid var(--ink);
+  background: var(--card);
+  padding: 18px 20px;
+}
+.heureka .doc-card__tag {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  display: block;
+  margin-bottom: 6px;
+}
+.heureka .doc-card h3 {
+  font-family: "Big Shoulders Display", sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.heureka .doc-card p {
+  font-size: 0.92rem;
+  color: var(--graphite);
+  margin-bottom: 10px;
+}
+.heureka .doc-card ol,
+.heureka .doc-card ul {
+  font-size: 0.9rem;
+  color: var(--ink);
+  padding-left: 20px;
+  margin-bottom: 10px;
+}
+.heureka .doc-card li {
+  margin-bottom: 4px;
+}
+.heureka .doc-card__how {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--ink);
+  border-top: 1px dashed var(--line);
+  padding-top: 10px;
+}
+.heureka .doc-card__how b {
+  color: var(--red);
+  font-weight: 500;
+}
+.heureka {
+  /* ── zespół ── */
+}
+.heureka .crew {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 8px;
+}
+.heureka .person {
+  border: 1.5px solid var(--ink);
+  background: var(--card);
+  position: relative;
+}
+.heureka .person__portrait {
+  display: grid;
+  place-items: center;
+  height: 240px;
+  overflow: hidden;
+  background: linear-gradient(var(--ds-color-grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--ds-color-grid-line) 1px, transparent 1px), var(--ds-color-bg-canvas);
+  background-size: var(--ds-grid-size-engineering) var(--ds-grid-size-engineering);
+  border-bottom: 1.5px solid var(--ink);
+}
+.heureka .person__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.heureka .person__body {
+  padding: 16px 18px;
+}
+.heureka .person__role {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--graphite);
+}
+.heureka .person__name {
+  font-family: "Big Shoulders Display", sans-serif;
+  font-weight: 800;
+  font-size: 1.6rem;
+  text-transform: uppercase;
+  margin: 2px 0 8px;
+}
+.heureka .person__body > p:not(.person__role) {
+  font-size: 0.9rem;
+  color: var(--graphite);
+}
+.heureka .person__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.heureka .person__tags span {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  border: 1px solid var(--line);
+  padding: 2px 8px;
+}
+.heureka {
+  /* ── tabelka rysunkowa ── */
+}
+.heureka .titleblock {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  border-top: 1.5px solid var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+}
+.heureka .titleblock > div {
+  padding: 10px 16px;
+  border-right: 1px solid var(--ink);
+}
+.heureka .titleblock > div:last-child {
+  border-right: 0;
+}
+.heureka .titleblock dt {
+  color: var(--graphite);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.heureka .titleblock dd {
+  font-weight: 500;
+}
+@media (max-width: 720px) {
+  .heureka .form__options,
+  .heureka .crew {
+    grid-template-columns: 1fr;
+  }
+  .heureka .opt + .opt {
+    border-left: 0;
+    border-top: 1px dashed var(--line);
+  }
+  .heureka .step {
+    padding-left: 0;
+    padding-top: 76px;
+  }
+  .heureka .trail::before {
+    display: none;
+  }
+  .heureka .titleblock {
+    grid-template-columns: 1fr 1fr;
+  }
+  .heureka .titleblock > div {
+    border-bottom: 1px solid var(--ink);
+  }
+  .heureka .architecture-panel__meta {
+    text-align: left;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .heureka .step {
+    animation: heureka-rise 0.5s ease both;
+  }
+}
+
+@keyframes heureka-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes heureka-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+html {
+  color-scheme: light dark;
+}
+
+html.light {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: var(--ds-font-family-body);
+  background: var(--ds-color-bg-canvas);
+  color: var(--ds-color-content-primary);
+}

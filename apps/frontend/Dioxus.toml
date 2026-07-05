@@ -1,0 +1,8 @@
+[application]
+name = "frontend"
+
+[web.app]
+title = "Heureka — system rozwiązywania problemów wynalazczych"
+
+[web.watcher]
+watch_path = ["src", "assets"]

@@ -94,14 +94,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
-          node-version: 20
-          cache: 'npm'
+          targets: wasm32-unknown-unknown
 
-      - name: Install Dependencies
-        run: npm ci
+      - name: Install Dioxus CLI
+        uses: cargo-bins/cargo-binstall@main
+
+      - run: cargo binstall -y dioxus-cli
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -112,8 +113,8 @@ jobs:
       - name: Configure Docker
         run: gcloud auth configure-docker --quiet
 
-      - name: Build Frontend with Nx
-        run: npx nx build frontend --configuration production
+      - name: Build Frontend (Dioxus)
+        run: bash tools/build-frontend.sh
 
       - name: Build and Push Docker Image
         run: |

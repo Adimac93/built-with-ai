@@ -6,6 +6,8 @@ tmp
 out-tsc
 apps/api/target/
 apps/agent/target/
+apps/frontend/target/
+apps/frontend/dist/
 
 # dependencies
 node_modules

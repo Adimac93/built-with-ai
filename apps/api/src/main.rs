@@ -13,9 +13,11 @@ use tower_http::cors::CorsLayer;
 /// arrive as base64 JSON, not multipart.
 const MAX_BODY_BYTES: usize = 10 * 1024 * 1024;
 
-/// Origins allowed by the Nest API's CORS config.
-const ALLOWED_ORIGINS: [&str; 3] = [
+/// Origins allowed by the Nest API's CORS config, plus the Dioxus dev
+/// server (`dx serve`, port 8080) which replaced Angular's :4200.
+const ALLOWED_ORIGINS: [&str; 4] = [
     "http://localhost:4200",
+    "http://localhost:8080",
     "https://frontend-1062481454649.us-central1.run.app",
     "https://ai.sidequestly.xyz",
 ];

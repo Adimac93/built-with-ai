@@ -2,72 +2,65 @@
   "name": "frontend",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "prefix": "app",
   "sourceRoot": "apps/frontend/src",
-  "tags": ["app"],
+  "tags": ["app", "rust"],
   "targets": {
     "build": {
-      "executor": "@angular/build:application",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/src/**/*",
+        "{projectRoot}/assets/**/*",
+        "{projectRoot}/public/**/*",
+        "{projectRoot}/Cargo.toml",
+        "{projectRoot}/Cargo.lock",
+        "{projectRoot}/Dioxus.toml"
+      ],
+      "outputs": ["{projectRoot}/dist/web"],
       "options": {
-        "outputPath": "dist/apps/frontend",
-        "browser": "apps/frontend/src/main.ts",
-        "tsConfig": "apps/frontend/tsconfig.app.json",
-        "inlineStyleLanguage": "scss",
-        "assets": [
-          {
-            "glob": "**/*",
-            "input": "apps/frontend/public"
-          }
-        ],
-        "styles": ["apps/frontend/src/styles.scss", "node_modules/ng-diagram/styles.css"]
-      },
-      "configurations": {
-        "production": {
-          "budgets": [
-            {
-              "type": "initial",
-              "maximumWarning": "750kb",
-              "maximumError": "1.5mb"
-            },
-            {
-              "type": "anyComponentStyle",
-              "maximumWarning": "4kb",
-              "maximumError": "8kb"
-            }
-          ],
-          "outputHashing": "all"
-        },
-        "development": {
-          "optimization": false,
-          "extractLicenses": false,
-          "sourceMap": true
-        }
-      },
-      "defaultConfiguration": "production"
+        "command": "bash tools/build-frontend.sh"
+      }
     },
     "serve": {
       "continuous": true,
-      "executor": "@angular/build:dev-server",
-      "configurations": {
-        "production": {
-          "buildTarget": "frontend:build:production"
-        },
-        "development": {
-          "buildTarget": "frontend:build:development"
-        }
-      },
-      "defaultConfiguration": "development"
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "\"${DX_BIN:-$HOME/.cargo/bin/dx}\" serve",
+        "cwd": "apps/frontend"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/src/**/*",
+        "{projectRoot}/Cargo.toml",
+        "{projectRoot}/Cargo.lock"
+      ],
+      "options": {
+        "command": "cargo test",
+        "cwd": "apps/frontend"
+      }
     },
     "lint": {
-      "executor": "@nx/eslint:lint"
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/src/**/*",
+        "{projectRoot}/Cargo.toml",
+        "{projectRoot}/Cargo.lock"
+      ],
+      "options": {
+        "command": "cargo clippy --target wasm32-unknown-unknown -- -D warnings",
+        "cwd": "apps/frontend"
+      }
     },
     "serve-static": {
       "continuous": true,
       "executor": "@nx/web:file-server",
       "options": {
         "buildTarget": "frontend:build",
-        "staticFilePath": "dist/apps/frontend/browser",
+        "staticFilePath": "apps/frontend/dist/web",
         "spa": true
       }
     },

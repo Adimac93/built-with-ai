@@ -33,10 +33,15 @@ jobs:
 
       - run: npm ci
 
-      # Rust toolchain for apps/api (axum) lint/test/build targets
+      # Rust toolchain for the api/agent/frontend cargo targets
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
+          targets: wasm32-unknown-unknown
+
+      # dioxus-cli for the frontend build target
+      - uses: cargo-bins/cargo-binstall@main
+      - run: cargo binstall -y dioxus-cli
 
       - uses: nrwl/nx-set-shas@v5
 
