@@ -646,17 +646,30 @@
   .scores th:last-child {
     text-align: right;
   }
-  .bar {
-    display: inline-block;
+  .scores__result {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .scores__track {
+    flex: 1 1 auto;
+    min-width: 0;
     height: 10px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+  }
+  .bar {
+    display: block;
+    height: 100%;
     background: var(--ink);
-    vertical-align: middle;
-    margin-right: 10px;
   }
   .scores tr.win td {
     background: var(--ds-color-bg-score-win);
   }
   .score {
+    flex: 0 0 auto;
+    min-width: 4ch;
+    text-align: right;
     font-family: 'IBM Plex Mono', monospace;
   }
 

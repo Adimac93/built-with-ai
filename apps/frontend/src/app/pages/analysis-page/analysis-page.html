@@ -228,12 +228,15 @@
                 <td>{{ c.name }}</td>
                 <td>{{ c.source }}</td>
                 <td>
-                  <span
-                    class="bar"
-                    [style.width.px]="c.score"
-                    aria-hidden="true"
-                  ></span>
-                  <span class="score">{{ c.score }}</span>
+                  <div class="scores__result">
+                    <span class="scores__track" aria-hidden="true">
+                      <span
+                        class="bar"
+                        [style.width.%]="(c.score / (t.ranked[0].score || 1)) * 100"
+                      ></span>
+                    </span>
+                    <span class="score">{{ c.score }}</span>
+                  </div>
                 </td>
               </tr>
             }
