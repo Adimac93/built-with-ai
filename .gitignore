@@ -1,61 +1,28 @@
-# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
-
-# compiled output
-dist
-tmp
-out-tsc
+# Rust build artifacts
 apps/api/target/
 apps/agent/target/
 apps/frontend/target/
 apps/frontend/dist/
 
-# dependencies
-node_modules
+# Secrets / local env
+.env
+
+# System files
+.DS_Store
+Thumbs.db
 
 # IDEs and editors
 /.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-
-# IDE - VSCode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# misc
-/.sass-cache
-/connect.lock
-/coverage
-/libpeerconnection.log
-npm-debug.log
-yarn-error.log
-testem.log
-/typings
-
-# System Files
-.DS_Store
-Thumbs.db
-
-.nx/cache
-.nx/workspace-data
+# Local tooling caches
 .claude/worktrees
 .claude/settings.local.json
-
-.angular
-
-.nx/polygraph
-
 .docker/
-
-.env
-
 .playwright-mcp/
-node_modules/
-.env
 .pnpm-store/
+node_modules/
