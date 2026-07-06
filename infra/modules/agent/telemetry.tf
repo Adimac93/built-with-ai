@@ -54,7 +54,6 @@ resource "google_storage_bucket_iam_member" "telemetry_connection_access" {
 # Log Sinks — route GenAI and feedback logs directly to BigQuery
 # ====================================================================
 
-# Log sink to route GenAI telemetry logs directly to BigQuery
 resource "google_logging_project_sink" "genai_logs_to_bq" {
   name        = "${var.project_name}-genai-logs"
   project     = var.project_id
@@ -70,7 +69,6 @@ resource "google_logging_project_sink" "genai_logs_to_bq" {
   depends_on = [google_bigquery_dataset.telemetry_dataset]
 }
 
-# Log sink for user feedback logs — routes to the same BigQuery dataset
 resource "google_logging_project_sink" "feedback_logs_to_bq" {
   name        = "${var.project_name}-feedback"
   project     = var.project_id
@@ -105,7 +103,6 @@ resource "google_bigquery_dataset_iam_member" "feedback_logs_bq_writer" {
 # Completions External Table (GCS-based)
 # ====================================================================
 
-# External table for completions data (messages/parts) stored in GCS
 resource "google_bigquery_table" "completions_external_table" {
   project             = var.project_id
   dataset_id          = google_bigquery_dataset.telemetry_dataset.dataset_id
@@ -121,7 +118,6 @@ resource "google_bigquery_table" "completions_external_table" {
     max_bad_records       = 1000
   }
 
-  # Schema matching the ADK completions format
   schema = jsonencode([
     {
       name = "parts"
@@ -154,12 +150,6 @@ resource "google_bigquery_table" "completions_external_table" {
 # GenAI Log Export Table (pre-created for the completions view)
 # ====================================================================
 
-# Pre-create the log export table so the completions_view can be created
-# immediately on first deploy. Cloud Logging appends to this table via the
-# sink and adds new columns as needed (BQ schema evolution).
-# Labels are flattened: dots in label keys become underscores (e.g.
-# gen_ai.conversation.id → labels.gen_ai_conversation_id).
-
 resource "google_bigquery_table" "genai_logs_table" {
   project             = var.project_id
   dataset_id          = google_bigquery_dataset.telemetry_dataset.dataset_id
@@ -172,12 +162,7 @@ resource "google_bigquery_table" "genai_logs_table" {
     field = "timestamp"
   }
 
-  # Cloud Logging BQ export schema (shared between cicd and single-project).
-  # Top-level fields are camelCase (Cloud Logging's LogEntry protobuf schema).
-  # Labels are snake_case (OTel attribute keys with dots flattened to underscores).
-  # All fields NULLABLE to match Cloud Logging's default export behavior and
-  # avoid sink write failures for optional fields (e.g. trace, spanId, labels).
-  schema = file("${path.module}/../shared/genai_logs_schema.json")
+  schema = file("${path.module}/genai_logs_schema.json")
 
   depends_on = [google_bigquery_dataset.telemetry_dataset]
 }
@@ -186,7 +171,6 @@ resource "google_bigquery_table" "genai_logs_table" {
 # Completions View (Joins BQ log export with GCS Data)
 # ====================================================================
 
-# View that joins BigQuery log export data with GCS-stored completions data
 resource "google_bigquery_table" "completions_view" {
   project             = var.project_id
   dataset_id          = google_bigquery_dataset.telemetry_dataset.dataset_id
@@ -195,7 +179,7 @@ resource "google_bigquery_table" "completions_view" {
   deletion_protection = false
 
   view {
-    query = templatefile("${path.module}/../shared/completions.sql", {
+    query = templatefile("${path.module}/completions.sql", {
       project_id                 = var.project_id
       dataset_id                 = google_bigquery_dataset.telemetry_dataset.dataset_id
       completions_external_table = google_bigquery_table.completions_external_table.table_id

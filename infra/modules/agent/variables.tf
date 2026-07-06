@@ -26,7 +26,7 @@ variable "project_id" {
 variable "region" {
   type        = string
   description = "Google Cloud region for resource deployment."
-  default     = "us-east1"
+  default     = "europe-central2"
 }
 
 variable "telemetry_logs_filter" {
@@ -45,7 +45,6 @@ variable "app_sa_roles" {
   description = "List of roles to assign to the application service account"
   type        = list(string)
   default = [
-
     "roles/aiplatform.user",
     "roles/logging.logWriter",
     "roles/cloudtrace.agent",
@@ -55,7 +54,7 @@ variable "app_sa_roles" {
 }
 
 variable "allow_unauthenticated_invocations" {
-  description = "Grant allUsers the run.invoker role so the agent Cloud Run service accepts unauthenticated calls (the api service calls /solve directly). Set to false to require authenticated invocations."
+  description = "Grant allUsers the run.invoker role so the agent Cloud Run service accepts unauthenticated calls. Set to false to require authenticated invocations."
   type        = bool
   default     = true
 }

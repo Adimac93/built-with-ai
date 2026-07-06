@@ -18,7 +18,6 @@ locals {
   }
 }
 
-
 # Get the project number
 data "google_project" "project" {
   project_id = var.project_id
@@ -57,9 +56,6 @@ resource "google_project_iam_member" "app_sa_roles" {
 }
 
 # Allow public (unauthenticated) invocation of the agent Cloud Run service.
-# The api service calls the agent's /solve endpoint directly without an ID token,
-# so allUsers needs roles/run.invoker. Terraform now owns this binding so it
-# survives redeploys instead of being dropped (which caused the 403 -> 500 chain).
 resource "google_cloud_run_v2_service_iam_member" "public_invoker" {
   count    = var.allow_unauthenticated_invocations ? 1 : 0
   project  = var.project_id
@@ -68,5 +64,3 @@ resource "google_cloud_run_v2_service_iam_member" "public_invoker" {
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
-
-

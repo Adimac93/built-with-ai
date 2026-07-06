@@ -12,6 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+output "app_service_account_email" {
+  description = "Application service account email"
+  value       = google_service_account.app_sa.email
+}
+
+output "logs_bucket_name" {
+  description = "Logs storage bucket name"
+  value       = google_storage_bucket.logs_data_bucket.name
+}
+
 output "cloud_run_service_url" {
   description = "Cloud Run service URL"
   value       = google_cloud_run_v2_service.app.uri
@@ -20,4 +30,14 @@ output "cloud_run_service_url" {
 output "cloud_run_service_name" {
   description = "Cloud Run service name"
   value       = google_cloud_run_v2_service.app.name
+}
+
+output "telemetry_dataset_id" {
+  description = "BigQuery dataset ID for telemetry data"
+  value       = google_bigquery_dataset.telemetry_dataset.dataset_id
+}
+
+output "telemetry_bigquery_connection_id" {
+  description = "BigQuery connection ID for telemetry GCS access"
+  value       = google_bigquery_connection.genai_telemetry_connection.connection_id
 }

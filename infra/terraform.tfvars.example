@@ -1,0 +1,14 @@
+# Copy this file to terraform.tfvars and fill in your values.
+# terraform.tfvars is gitignored — never commit secrets or real project IDs.
+
+project_id = "built-with-ai-gdg-wroclaw"
+region     = "europe-central2"
+
+# WIF
+github_repo       = "Adimac93/built-with-ai"
+wif_sa_name       = "github-actions-sa"
+wif_pool_name     = "github-actions-pool"
+wif_provider_name = "github-provider"
+
+# Agent
+agent_project_name = "agent"

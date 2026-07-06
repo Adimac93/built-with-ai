@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 resource "google_cloud_run_v2_service" "app" {
   name                = var.project_name
   location            = var.region
@@ -81,15 +80,13 @@ resource "google_cloud_run_v2_service" "app" {
     percent = 100
   }
 
-  # This lifecycle block prevents Terraform from overwriting the container image when it's
-  # updated by Cloud Run deployments outside of Terraform (e.g., via CI/CD pipelines)
+  # Prevent Terraform from overwriting the image when it's updated by CI/CD outside of Terraform.
   lifecycle {
     ignore_changes = [
       template[0].containers[0].image,
     ]
   }
 
-  # Make dependencies conditional to avoid errors.
   depends_on = [
     resource.google_project_service.services,
   ]
