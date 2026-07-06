@@ -75,7 +75,7 @@ PROBLEM: {problem}
 
 A technical contradiction exists when improving one engineering parameter degrades another.
 Identify which parameter we want to IMPROVE and which one WORSENS as a side effect.
-Both values MUST be integers strictly between 1 and 39 inclusive.
+Both values MUST be integers between 1 and 39 inclusive.
 
 TRIZ engineering parameters:
 {TRIZ_PARAMETERS_TEXT}

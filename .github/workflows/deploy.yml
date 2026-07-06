@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+# Rapid pushes to main must not race two deploys of the same services.
+concurrency:
+  group: deploy-cloud-run
+  cancel-in-progress: false
+
 jobs:
   deploy-agent:
     runs-on: ubuntu-latest
@@ -40,7 +45,7 @@ jobs:
         with:
           service: agent
           image: gcr.io/${{ env.PROJECT_ID }}/agent:${{ github.sha }}
-          region: europe-central2
+          region: ${{ env.REGION }}
           flags: '--allow-unauthenticated'
           env_vars: |
             GOOGLE_CLOUD_PROJECT=${{ env.PROJECT_ID }}

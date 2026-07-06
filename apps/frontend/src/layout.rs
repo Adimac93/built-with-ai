@@ -3,8 +3,8 @@
 
 use dioxus::prelude::*;
 
-use crate::state::{apply_a11y_effects, DARK_MODE, FONT_STEPS, FONT_STEP_INDEX, HIGH_CONTRAST};
 use crate::Route;
+use crate::state::{DARK_MODE, FONT_STEP_INDEX, FONT_STEPS, HIGH_CONTRAST, apply_a11y_effects};
 
 struct SheetMeta {
     ark: &'static str,
@@ -56,19 +56,48 @@ fn NavLink(to: Route, label: &'static str) -> Element {
     }
 }
 
+/// Today's date as `YYYY-MM-DD` (UTC). js-sys imports panic outside wasm, so
+/// the server render computes the civil date from `SystemTime` instead; both
+/// paths use UTC, keeping SSR and hydration output identical.
+#[cfg(target_arch = "wasm32")]
+fn today_iso() -> String {
+    js_sys::Date::new_0()
+        .to_iso_string()
+        .as_string()
+        .unwrap_or_default()
+        .chars()
+        .take(10)
+        .collect()
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn today_iso() -> String {
+    let secs = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    // Days-since-epoch → civil date (Howard Hinnant's algorithm).
+    let days = (secs / 86_400) as i64;
+    let z = days + 719_468;
+    let era = z.div_euclid(146_097);
+    let doe = z.rem_euclid(146_097);
+    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
+    let y = yoe + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let d = doy - (153 * mp + 2) / 5 + 1;
+    let m = if mp < 10 { mp + 3 } else { mp - 9 };
+    let y = if m <= 2 { y + 1 } else { y };
+    format!("{y:04}-{m:02}-{d:02}")
+}
+
 #[component]
 pub fn HeurekaLayout() -> Element {
     apply_a11y_effects();
 
     let route = use_route::<Route>();
     let meta = sheet_meta(&route);
-    let today = js_sys::Date::new_0()
-        .to_iso_string()
-        .as_string()
-        .unwrap_or_default()
-        .chars()
-        .take(10)
-        .collect::<String>();
+    let today = today_iso();
 
     let dark = *DARK_MODE.read();
     let contrast = *HIGH_CONTRAST.read();

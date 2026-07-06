@@ -8,7 +8,7 @@ use crate::api;
 use crate::diagrams::pipeline::PipelineDiagram;
 use crate::speech::{self, RecordingOutcome};
 use crate::state::{
-    complete_previous, focus_on, mark_done, reset_highlights, set_active, FOCUS, PROCESSING,
+    FOCUS, PROCESSING, complete_previous, focus_on, mark_done, reset_highlights, set_active,
 };
 use crate::trail::{EvalMode, Trail};
 
@@ -56,10 +56,10 @@ pub fn AnalysisPage() -> Element {
     // centerOnNode): scroll the modal's copy of the node into view.
     use_effect(move || {
         let focus = *FOCUS.read();
-        if let Some((_, node_id)) = focus {
-            if *PROCESSING.peek() {
-                speech::scroll_node_into_view(&format!("modal-{node_id}"));
-            }
+        if let Some((_, node_id)) = focus
+            && *PROCESSING.peek()
+        {
+            speech::scroll_node_into_view(&format!("modal-{node_id}"));
         }
     });
 
@@ -372,11 +372,13 @@ pub fn AnalysisPage() -> Element {
 }
 
 fn trail_view(t: &Trail) -> Element {
+    // Pugh/pairwise totals can be zero or negative; a non-positive top score
+    // would invert the bar proportions, so fall back to 1 and clamp widths.
     let top_score = t
         .ranked
         .first()
         .map(|c| c.score)
-        .filter(|s| *s != 0)
+        .filter(|s| *s > 0)
         .unwrap_or(1);
     let eval_label = t.eval_mode.label();
 
@@ -455,7 +457,7 @@ fn trail_view(t: &Trail) -> Element {
                                             aria_hidden: "true",
                                             span {
                                                 class: "bar",
-                                                style: "width: {c.score as f64 / top_score as f64 * 100.0}%;",
+                                                style: "width: {(c.score as f64 / top_score as f64 * 100.0).clamp(0.0, 100.0)}%;",
                                             }
                                         }
                                         span { class: "score", "{c.score}" }
@@ -490,7 +492,9 @@ fn trail_view(t: &Trail) -> Element {
                             if let Some(second) = &t.runner_up {
                                 li {
                                     "Przewaga "
-                                    b { "+{t.winner.score - second.score} pkt" }
+                                    // winner comes from the agent's winner_id, ranking is
+                                    // client-side — clamp so a disagreement never renders "+-N".
+                                    b { "+{(t.winner.score - second.score).max(0)} pkt" }
                                     " nad drugim w rankingu ({second.name} · {second.score} pkt)."
                                 }
                             }

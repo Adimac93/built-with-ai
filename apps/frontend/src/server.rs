@@ -5,13 +5,16 @@
 
 use std::time::Duration;
 
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 const METADATA_TOKEN_URL: &str =
     "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token";
 const SPEECH_API_URL: &str = "https://speech.googleapis.com/v1/speech:recognize";
 /// Matches the old gateway's axios-era timeout for the agent call.
 const AGENT_TIMEOUT: Duration = Duration::from_secs(120);
+/// Speech-to-Text is a short synchronous recognize call; reqwest has no
+/// default timeout, so cap it to avoid hanging the server function.
+const SPEECH_TIMEOUT: Duration = Duration::from_secs(30);
 /// Problem statements shorter than this are rejected (old `@MinLength(10)`).
 const MIN_PROBLEM_LENGTH: usize = 10;
 /// Audio arrives base64-encoded inside the server-fn payload.
@@ -22,38 +25,95 @@ fn http_client() -> &'static reqwest::Client {
     CLIENT.get_or_init(reqwest::Client::new)
 }
 
-/// Entry point for the server binary: serves the CSR bundle (`PUBLIC_DIR`,
-/// default `./public`) with an SPA fallback, registers server functions, and
-/// binds to `IP`/`PORT` (Cloud Run contract).
-pub fn main() {
+/// Serves the CSR bundle (`PUBLIC_DIR`, default `./public`) with an SPA
+/// fallback and registers server functions.
+fn build_router() -> axum::Router {
     use axum::extract::DefaultBodyLimit;
     use axum::routing::get;
     use dioxus::server::{DioxusRouterExt, ServeConfig};
 
-    if std::env::var("IP").is_err() {
-        std::env::set_var("IP", "0.0.0.0");
-    }
-
-    dioxus::serve(|| async {
-        let router = axum::Router::new()
-            .route("/health", get(|| async { "ok" }))
-            .layer(DefaultBodyLimit::max(MAX_BODY_BYTES))
-            .serve_dioxus_application(ServeConfig::new(), crate::App);
-
-        Ok(router)
-    })
+    // The body limit must wrap the fully-built router: `.layer` only
+    // covers routes registered before it, and the server-fn routes
+    // (which carry the base64 audio) are added by
+    // `serve_dioxus_application`.
+    axum::Router::new()
+        .route("/health", get(|| async { "ok" }))
+        .serve_dioxus_application(ServeConfig::new(), crate::App)
+        .layer(DefaultBodyLimit::max(MAX_BODY_BYTES))
 }
 
-/// Validates the problem and forwards it to the agent (`${AGENT_URL}/solve`),
+/// Entry point for the server binary.
+///
+/// Dev builds go through `dioxus::serve` (dx-managed address, subsecond
+/// hot-patching). Release builds serve axum directly: it binds `IP`/`PORT`
+/// (Cloud Run contract, default `0.0.0.0:8080`) and drains in-flight
+/// requests on SIGTERM — `dioxus::serve` offers no shutdown hook.
+#[cfg(debug_assertions)]
+pub fn main() {
+    dioxus::serve(|| async { Ok(build_router()) })
+}
+
+#[cfg(not(debug_assertions))]
+pub fn main() {
+    use std::net::SocketAddr;
+
+    async fn shutdown_signal() {
+        let ctrl_c = async {
+            tokio::signal::ctrl_c()
+                .await
+                .expect("install Ctrl-C handler");
+        };
+        let terminate = async {
+            tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+                .expect("install SIGTERM handler")
+                .recv()
+                .await;
+        };
+        tokio::select! {
+            _ = ctrl_c => {},
+            _ = terminate => {},
+        }
+        tracing::info!("shutdown signal received, draining in-flight requests");
+    }
+
+    tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .expect("tokio runtime")
+        .block_on(async {
+            let ip = std::env::var("IP").unwrap_or_else(|_| "0.0.0.0".into());
+            let port: u16 = std::env::var("PORT")
+                .ok()
+                .and_then(|port| port.parse().ok())
+                .unwrap_or(8080);
+            let addr: SocketAddr = format!("{ip}:{port}").parse().expect("valid IP/PORT");
+            let listener = tokio::net::TcpListener::bind(addr)
+                .await
+                .unwrap_or_else(|err| panic!("failed to bind {addr}: {err}"));
+
+            tracing::info!("Frontend server listening on http://{addr}");
+            axum::serve(listener, build_router())
+                .with_graceful_shutdown(shutdown_signal())
+                .await
+                .expect("server error");
+        })
+}
+
+/// Resolves the agent base URL from `AGENT_URL` (Cloud Run) or the local
+/// default. Read at call time, not startup, to keep tests hermetic.
+pub fn agent_url_from_env() -> String {
+    std::env::var("AGENT_URL").unwrap_or_else(|_| "http://localhost:8000".into())
+}
+
+/// Validates the problem and forwards it to the agent (`{agent_url}/solve`),
 /// passing the trail JSON through untouched — the agent's shape is the
 /// contract the client renders.
-pub async fn solve_impl(problem: &str) -> Result<Value, String> {
+pub async fn solve_impl(agent_url: &str, problem: &str) -> Result<Value, String> {
     if problem.trim().chars().count() < MIN_PROBLEM_LENGTH {
         return Err(format!(
             "problem must be at least {MIN_PROBLEM_LENGTH} characters"
         ));
     }
-    let agent_url = std::env::var("AGENT_URL").unwrap_or_else(|_| "http://localhost:8000".into());
 
     let response = http_client()
         .post(format!("{agent_url}/solve"))
@@ -98,6 +158,7 @@ pub async fn transcribe_impl(audio_content: &str, mime_type: &str) -> Result<Str
             },
             "audio": { "content": audio_content },
         }))
+        .timeout(SPEECH_TIMEOUT)
         .send()
         .await
         .map_err(|err| {
@@ -155,10 +216,10 @@ fn extract_transcript(data: &Value) -> String {
 /// `GOOGLE_CLOUD_ACCESS_TOKEN` env override, else the GCP metadata server
 /// (Cloud Run service account).
 async fn get_access_token() -> Result<String, String> {
-    if let Ok(token) = std::env::var("GOOGLE_CLOUD_ACCESS_TOKEN") {
-        if !token.is_empty() {
-            return Ok(token);
-        }
+    if let Ok(token) = std::env::var("GOOGLE_CLOUD_ACCESS_TOKEN")
+        && !token.is_empty()
+    {
+        return Ok(token);
     }
     let response = http_client()
         .get(METADATA_TOKEN_URL)
@@ -208,7 +269,7 @@ mod tests {
 
     #[tokio::test]
     async fn solve_rejects_short_problems() {
-        let err = solve_impl("too short").await.unwrap_err();
+        let err = solve_impl("http://unused", "too short").await.unwrap_err();
         assert!(err.contains("at least 10 characters"));
     }
 
@@ -226,20 +287,23 @@ mod tests {
         tokio::spawn(async move {
             axum::serve(listener, router).await.unwrap();
         });
-        std::env::set_var("AGENT_URL", format!("http://{addr}"));
-
-        let trail = solve_impl("a sufficiently long problem statement")
-            .await
-            .unwrap();
+        let trail = solve_impl(
+            &format!("http://{addr}"),
+            "a sufficiently long problem statement",
+        )
+        .await
+        .unwrap();
         assert_eq!(trail["step5_choice"]["winner_id"], "triz-1");
     }
 
     #[tokio::test]
     async fn transcribe_rejects_empty_audio_and_bad_mime() {
         assert!(transcribe_impl("", "audio/webm").await.is_err());
-        assert!(transcribe_impl("Zm9v", "audio/flac")
-            .await
-            .unwrap_err()
-            .contains("Unsupported"));
+        assert!(
+            transcribe_impl("Zm9v", "audio/flac")
+                .await
+                .unwrap_err()
+                .contains("Unsupported")
+        );
     }
 }

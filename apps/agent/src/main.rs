@@ -5,14 +5,24 @@ mod routes;
 mod triz;
 
 use std::net::SocketAddr;
+use std::time::Duration;
 
-use axum::http::{header, HeaderValue};
+use axum::http::{HeaderValue, Method, StatusCode, header};
 use axum::routing::{get, post};
 use axum::{Json, Router};
-use serde_json::{json, Value};
-use tower_http::cors::{Any, CorsLayer};
+use serde_json::{Value, json};
+use tower_http::cors::CorsLayer;
+use tower_http::limit::RequestBodyLimitLayer;
+use tower_http::timeout::TimeoutLayer;
 
 use gemini::GeminiClient;
+
+/// Requests carry a short problem statement or feedback JSON; anything
+/// bigger is abuse of an unauthenticated endpoint.
+const MAX_BODY_BYTES: usize = 64 * 1024;
+/// Matches the frontend proxy's `AGENT_TIMEOUT` — it gives up at 120s, so
+/// work continuing past that is wasted.
+const REQUEST_TIMEOUT: Duration = Duration::from_secs(120);
 
 #[derive(Clone)]
 pub struct AppState {
@@ -35,23 +45,74 @@ fn app(state: AppState, allow_origins: Option<&str>) -> Router {
     if let Some(origins) = allow_origins {
         let origins: Vec<HeaderValue> = origins
             .split(',')
-            .filter_map(|origin| origin.trim().parse().ok())
+            .filter_map(|origin| {
+                let origin = origin.trim();
+                let parsed = origin.parse().ok();
+                if parsed.is_none() {
+                    tracing::warn!("ALLOW_ORIGINS: dropping malformed origin {origin:?}");
+                }
+                parsed
+            })
             .collect();
         router = router.layer(
             CorsLayer::new()
                 .allow_origin(origins)
-                .allow_methods(Any)
+                .allow_methods([Method::POST])
                 .allow_headers([header::CONTENT_TYPE]),
         );
     }
 
-    router.with_state(state)
+    router
+        .layer(TimeoutLayer::with_status_code(
+            StatusCode::REQUEST_TIMEOUT,
+            REQUEST_TIMEOUT,
+        ))
+        .layer(RequestBodyLimitLayer::new(MAX_BODY_BYTES))
+        .with_state(state)
+}
+
+/// `RUST_LOG`-filtered tracing; Cloud Logging JSON on Cloud Run (detected via
+/// `K_SERVICE`), human-readable fmt locally. The `/feedback` route bypasses
+/// tracing with a raw `println!` — its exact jsonPayload shape is the
+/// BigQuery sink contract.
+fn init_tracing() {
+    use tracing_subscriber::layer::SubscriberExt as _;
+    use tracing_subscriber::util::SubscriberInitExt as _;
+
+    let filter = tracing_subscriber::EnvFilter::try_from_default_env()
+        .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info"));
+    let registry = tracing_subscriber::registry().with(filter);
+    if std::env::var_os("K_SERVICE").is_some() {
+        registry.with(tracing_stackdriver::layer()).init();
+    } else {
+        registry.with(tracing_subscriber::fmt::layer()).init();
+    }
+}
+
+/// Resolves on SIGTERM (Cloud Run's stop signal) or Ctrl-C.
+async fn shutdown_signal() {
+    let ctrl_c = async {
+        tokio::signal::ctrl_c()
+            .await
+            .expect("install Ctrl-C handler");
+    };
+    let terminate = async {
+        tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+            .expect("install SIGTERM handler")
+            .recv()
+            .await;
+    };
+    tokio::select! {
+        _ = ctrl_c => {},
+        _ = terminate => {},
+    }
+    tracing::info!("shutdown signal received, draining in-flight requests");
 }
 
 #[tokio::main]
 async fn main() {
     dotenvy::dotenv().ok();
-    tracing_subscriber::fmt().init();
+    init_tracing();
 
     let state = AppState {
         gemini: GeminiClient::from_env(),
@@ -69,6 +130,7 @@ async fn main() {
 
     tracing::info!("Agent listening on http://0.0.0.0:{port}");
     axum::serve(listener, app(state, allow_origins.as_deref()))
+        .with_graceful_shutdown(shutdown_signal())
         .await
         .expect("server error");
 }
@@ -76,7 +138,7 @@ async fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use axum::body::{to_bytes, Body};
+    use axum::body::{Body, to_bytes};
     use axum::extract::Request as ExtractRequest;
     use axum::http::{Request, StatusCode};
     use gemini::GeminiAuth;

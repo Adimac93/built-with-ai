@@ -4,8 +4,8 @@
 
 use dioxus::prelude::*;
 
-use super::{port_point, Edge, Port};
-use crate::state::{highlight_of, NodeHighlight};
+use super::{Edge, Port, port_point};
+use crate::state::{NodeHighlight, highlight_of};
 
 const NW: f64 = 180.0; // node width
 const NH: f64 = 120.0; // node height

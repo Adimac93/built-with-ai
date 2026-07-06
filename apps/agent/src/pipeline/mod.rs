@@ -1,7 +1,7 @@
 pub mod prompts;
 pub mod schemas;
 
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 use crate::error::AgentError;
 use crate::gemini::{GeminiClient, Output};
@@ -135,9 +135,14 @@ fn build_lookup(improving: i64, worsening: i64) -> (Value, String) {
 }
 
 /// Argmax over evaluation totals; mirrors Python `ChoiceAgent` exactly,
-/// including the empty-evaluations fallback.
+/// including the empty-evaluations fallback. Ties resolve to the *first*
+/// candidate (Python `max` semantics) — `max_by_key` would pick the last.
 fn select_winner(evaluation: &schemas::EvaluationResult) -> Value {
-    match evaluation.evaluations.iter().max_by_key(|e| e.total) {
+    let argmax = evaluation
+        .evaluations
+        .iter()
+        .reduce(|best, e| if e.total > best.total { e } else { best });
+    match argmax {
         None => json!({
             "winner_id": "none",
             "winner_total": 0,
@@ -185,6 +190,20 @@ mod tests {
             choice["reasoning"],
             "Highest aggregate score (525) across all criteria. argmax selection."
         );
+    }
+
+    #[test]
+    fn tied_totals_resolve_to_first_candidate() {
+        // Python `max` keeps the first max; the trail's winner_id must match.
+        let evaluation = EvaluationResult {
+            evaluations: vec![
+                score("triz-1", 500),
+                score("scamper-A", 500),
+                score("scamper-S", 475),
+            ],
+        };
+        let choice = select_winner(&evaluation);
+        assert_eq!(choice["winner_id"], "triz-1");
     }
 
     #[test]

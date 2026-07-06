@@ -3,7 +3,7 @@
 
 use dioxus::prelude::*;
 
-use super::{port_point, Port};
+use super::{Port, port_point};
 
 const W: f64 = 210.0;
 const H: f64 = 104.0;
@@ -36,8 +36,7 @@ const NODES: [ArchNode; 16] = [
         y: 110.0,
         eyebrow: "frontend",
         title: "Dioxus",
-        body:
-            "Rust + WebAssembly: komponenty, sygnały, routing, polski interfejs i kontrolki a11y.",
+        body: "Rust + WebAssembly: komponenty, sygnały, routing, polski interfejs i kontrolki a11y.",
         kind: "app",
     },
     ArchNode {
@@ -209,11 +208,10 @@ const EDGES: [ArchEdge; 17] = [
     e("gcp", "agentService", Port::Top, Port::Bottom),
 ];
 
-fn node_by_id(id: &str) -> &'static ArchNode {
-    NODES
-        .iter()
-        .find(|n| n.id == id)
-        .expect("edge references a known node")
+/// `None` for an unknown id — a typo in `EDGES` drops that edge instead of
+/// panicking the whole page at render time.
+fn node_by_id(id: &str) -> Option<&'static ArchNode> {
+    NODES.iter().find(|n| n.id == id)
 }
 
 #[component]
@@ -238,20 +236,22 @@ pub fn ArchitectureDiagram() -> Element {
                 }
                 for edge in EDGES.iter() {
                     {
-                        let s = node_by_id(edge.source);
-                        let t = node_by_id(edge.target);
-                        let from = port_point(s.x, s.y, W, H, edge.source_port);
-                        let to = port_point(t.x, t.y, W, H, edge.target_port);
-                        rsx! {
-                            line {
-                                class: "edge",
-                                x1: "{from.0}",
-                                y1: "{from.1}",
-                                x2: "{to.0}",
-                                y2: "{to.1}",
-                                marker_end: "url(#architecture-arrow)",
-                            }
-                        }
+                        node_by_id(edge.source)
+                            .zip(node_by_id(edge.target))
+                            .map(|(s, t)| {
+                                let from = port_point(s.x, s.y, W, H, edge.source_port);
+                                let to = port_point(t.x, t.y, W, H, edge.target_port);
+                                rsx! {
+                                    line {
+                                        class: "edge",
+                                        x1: "{from.0}",
+                                        y1: "{from.1}",
+                                        x2: "{to.0}",
+                                        y2: "{to.1}",
+                                        marker_end: "url(#architecture-arrow)",
+                                    }
+                                }
+                            })
                     }
                 }
             }

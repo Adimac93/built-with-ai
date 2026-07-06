@@ -1,7 +1,8 @@
-use std::time::Duration;
+use std::sync::Arc;
+use std::time::{Duration, Instant};
 
 use serde::de::DeserializeOwned;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 use crate::error::AgentError;
 
@@ -31,12 +32,22 @@ pub enum GeminiAuth {
     Vertex,
 }
 
+/// Metadata-server token cached until shortly before expiry — a solve makes
+/// ~7 Gemini calls and must not pay a token round-trip for each.
+struct CachedToken {
+    token: String,
+    expires_at: Instant,
+}
+
 #[derive(Clone)]
 pub struct GeminiClient {
     client: reqwest::Client,
     /// URL prefix up to (excluding) `/models/{model}:generateContent`.
     base_url: String,
     auth: GeminiAuth,
+    /// Async mutex: held across the refresh fetch so concurrent callers
+    /// coalesce into one metadata-server request instead of stampeding.
+    vertex_token: Arc<tokio::sync::Mutex<Option<CachedToken>>>,
 }
 
 impl GeminiClient {
@@ -75,6 +86,7 @@ impl GeminiClient {
                 .expect("reqwest client"),
             base_url,
             auth,
+            vertex_token: Arc::new(tokio::sync::Mutex::new(None)),
         }
     }
 
@@ -156,20 +168,28 @@ impl GeminiClient {
             .await
             .map_err(|err| (true, err.to_string()))?;
         let status = response.status();
-        let data: Value = response
-            .json()
+        // Read as text first: error bodies are not guaranteed to be JSON
+        // (HTML 502 from a proxy, empty 503), and a decode failure must not
+        // discard the real status or the retryable classification.
+        let text = response
+            .text()
             .await
             .map_err(|err| (true, err.to_string()))?;
 
         if !status.is_success() {
-            let detail = data
-                .pointer("/error/message")
-                .and_then(Value::as_str)
-                .unwrap_or_else(|| status.as_str())
-                .to_string();
+            let detail = serde_json::from_str::<Value>(&text)
+                .ok()
+                .and_then(|data| {
+                    data.pointer("/error/message")
+                        .and_then(Value::as_str)
+                        .map(String::from)
+                })
+                .unwrap_or_else(|| format!("{status}: {}", text.trim()));
             let retryable = status.is_server_error() || status.as_u16() == 429;
             return Err((retryable, detail));
         }
+
+        let data: Value = serde_json::from_str(&text).map_err(|err| (true, err.to_string()))?;
 
         let text: String = data
             .pointer("/candidates/0/content/parts")
@@ -188,12 +208,22 @@ impl GeminiClient {
         Ok(text)
     }
 
+    /// Env-override token, else a cached metadata-server token (refreshed
+    /// 60s before its `expires_in`).
     async fn vertex_token(&self) -> Result<String, String> {
-        if let Ok(token) = std::env::var("GOOGLE_CLOUD_ACCESS_TOKEN") {
-            if !token.is_empty() {
-                return Ok(token);
-            }
+        if let Ok(token) = std::env::var("GOOGLE_CLOUD_ACCESS_TOKEN")
+            && !token.is_empty()
+        {
+            return Ok(token);
         }
+
+        let mut cache = self.vertex_token.lock().await;
+        if let Some(cached) = cache.as_ref()
+            && cached.expires_at > Instant::now()
+        {
+            return Ok(cached.token.clone());
+        }
+
         let response = self
             .client
             .get(METADATA_TOKEN_URL)
@@ -209,9 +239,17 @@ impl GeminiClient {
             .json()
             .await
             .map_err(|err| format!("metadata token parse failed: {err}"))?;
-        data.get("access_token")
+        let token = data
+            .get("access_token")
             .and_then(Value::as_str)
             .map(String::from)
-            .ok_or_else(|| "metadata server returned no access token".to_string())
+            .ok_or_else(|| "metadata server returned no access token".to_string())?;
+
+        let expires_in = data.get("expires_in").and_then(Value::as_u64).unwrap_or(0);
+        *cache = Some(CachedToken {
+            token: token.clone(),
+            expires_at: Instant::now() + Duration::from_secs(expires_in.saturating_sub(60)),
+        });
+        Ok(token)
     }
 }

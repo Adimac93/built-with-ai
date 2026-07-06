@@ -4,11 +4,11 @@
 
 use dioxus::prelude::*;
 
-use crate::trail::{map_to_trail, EvalMode, SolveApiResponse, Trail};
+use crate::trail::{EvalMode, SolveApiResponse, Trail, map_to_trail};
 
 #[server(endpoint = "/api/solve")]
 async fn solve_server(problem: String) -> ServerFnResult<serde_json::Value> {
-    crate::server::solve_impl(&problem)
+    crate::server::solve_impl(&crate::server::agent_url_from_env(), &problem)
         .await
         .map_err(ServerFnError::new)
 }

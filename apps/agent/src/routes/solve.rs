@@ -1,11 +1,11 @@
-use axum::extract::State;
 use axum::Json;
+use axum::extract::State;
 use serde::Deserialize;
 use serde_json::Value;
 
+use crate::AppState;
 use crate::error::AgentError;
 use crate::pipeline;
-use crate::AppState;
 
 #[derive(Deserialize)]
 pub struct SolveRequest {

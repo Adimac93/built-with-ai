@@ -1,6 +1,6 @@
 use axum::Json;
 use serde::Deserialize;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 /// Mirrors the Python `Feedback` pydantic model (`app_utils/typing.py`).
 #[derive(Deserialize)]

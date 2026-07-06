@@ -15,19 +15,17 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy
-          targets: wasm32-unknown-unknown
+      # Installs the pinned toolchain, components, and targets
+      # from rust-toolchain.toml.
+      - name: Install Rust toolchain
+        run: rustup toolchain install
 
       - uses: Swatinem/rust-cache@v2
 
       - uses: cargo-bins/cargo-binstall@main
 
-      - name: Install just and dioxus-cli
-        run: cargo binstall -y just dioxus-cli
+      - name: Install just, dioxus-cli, cargo-deny
+        run: cargo binstall -y just dioxus-cli cargo-deny
 
-      - name: Lint, test, build
+      - name: Format, lint, deny, test, build
         run: just ci
-        env:
-          DX_BIN: dx

@@ -1,4 +1,4 @@
-FROM docker.io/rust:1-bookworm AS chef
+FROM docker.io/rust:1.96.1-bookworm AS chef
 
 WORKDIR /app
 
@@ -13,6 +13,7 @@ COPY . .
 RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS cacher
+COPY rust-toolchain.toml rust-toolchain.toml
 COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --locked --package agent --recipe-path recipe.json
 
