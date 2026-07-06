@@ -1,32 +1,38 @@
-FROM docker.io/rust:1-slim AS builder
+FROM docker.io/rust:1-bookworm AS chef
 
 WORKDIR /app
 
-# Workspace manifests first — dependency-caching layer builds dummy mains so
-# source edits don't invalidate the compiled dependency layer. All member
-# manifests are needed for the workspace to parse.
-COPY Cargo.toml Cargo.lock ./
-COPY apps/agent/Cargo.toml apps/agent/
-COPY apps/frontend/Cargo.toml apps/frontend/
-COPY apps/agent/triz.json apps/agent/triz.json
-RUN mkdir -p apps/agent/src apps/frontend/src \
-  && echo 'fn main() {}' > apps/agent/src/main.rs \
-  && echo 'fn main() {}' > apps/frontend/src/main.rs \
-  && cargo build --release -p agent \
-  && rm -rf apps/agent/src target/release/agent target/release/deps/agent-*
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ca-certificates cmake clang pkg-config \
+  && rm -rf /var/lib/apt/lists/*
 
-COPY apps/agent/src apps/agent/src
-RUN cargo build --release -p agent
+RUN cargo install cargo-chef --locked
+
+FROM chef AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
+
+FROM chef AS cacher
+COPY --from=planner /app/recipe.json recipe.json
+RUN cargo chef cook --release --locked --package agent --recipe-path recipe.json
+
+FROM chef AS builder
+COPY . .
+COPY --from=cacher /app/target target
+COPY --from=cacher /usr/local/cargo /usr/local/cargo
+RUN cargo build --release --locked --package agent --bin agent
 
 FROM docker.io/debian:bookworm-slim
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && useradd --system --uid 10001 --home-dir /nonexistent --shell /usr/sbin/nologin app
 
 COPY --from=builder /app/target/release/agent /usr/local/bin/agent
 
 ENV PORT=8080
 EXPOSE 8080
 
-CMD ["agent"]
+USER app
+ENTRYPOINT ["/usr/local/bin/agent"]

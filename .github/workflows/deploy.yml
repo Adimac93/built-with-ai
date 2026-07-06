@@ -5,17 +5,14 @@ on:
     branches:
       - main
 
-env:
-  PROJECT_ID: built-with-ai-gdg-wroclaw
-  REGION: us-central1
-  # The Workload Identity Provider will be output by our setup script
-  # We will fill this in dynamically after running the script, but for now we put a placeholder
-  WORKLOAD_IDENTITY_PROVIDER: 'projects/1062481454649/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider'
-  SERVICE_ACCOUNT: 'github-actions-sa@built-with-ai-gdg-wroclaw.iam.gserviceaccount.com'
-
 jobs:
   deploy-agent:
     runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: built-with-ai-gdg-wroclaw
+      REGION: us-central1
+      WORKLOAD_IDENTITY_PROVIDER: 'projects/1062481454649/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider'
+      SERVICE_ACCOUNT: 'github-actions-sa@built-with-ai-gdg-wroclaw.iam.gserviceaccount.com'
     permissions:
       contents: 'read'
       id-token: 'write'
@@ -52,6 +49,11 @@ jobs:
   deploy-frontend:
     needs: deploy-agent
     runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: built-with-ai-gdg-wroclaw
+      REGION: us-central1
+      WORKLOAD_IDENTITY_PROVIDER: 'projects/1062481454649/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider'
+      SERVICE_ACCOUNT: 'github-actions-sa@built-with-ai-gdg-wroclaw.iam.gserviceaccount.com'
     permissions:
       contents: 'read'
       id-token: 'write'
@@ -59,16 +61,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v7
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-
-      - name: Install just and Dioxus CLI
-        uses: cargo-bins/cargo-binstall@main
-
-      - run: cargo binstall -y just dioxus-cli
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
@@ -78,11 +70,6 @@ jobs:
 
       - name: Configure Docker
         run: gcloud auth configure-docker --quiet
-
-      - name: Build Frontend (Dioxus)
-        run: just build-frontend
-        env:
-          DX_BIN: dx
 
       - name: Build and Push Docker Image
         run: |

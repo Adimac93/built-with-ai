@@ -19,7 +19,7 @@ web-sys = { version = "0.3", features = ["Window", "Document", "Element", "DomTo
 axum = { workspace = true, optional = true }
 tokio = { workspace = true, optional = true }
 tower-http = { workspace = true, optional = true, features = ["fs"] }
-reqwest = { workspace = true, optional = true, features = ["rustls-tls"] }
+reqwest = { workspace = true, optional = true, features = ["rustls"] }
 tracing = { workspace = true, optional = true }
 
 [features]

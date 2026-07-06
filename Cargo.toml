@@ -20,8 +20,9 @@ tower = { version = "0.5", features = ["util"] }
 http-body-util = "0.1"
 
 [profile.release]
-lto = true
+lto = "fat"
+codegen-units = 1
 
 # WASM bundle size matters more than raw speed for the frontend.
 [profile.release.package.frontend]
-opt-level = "s"
+opt-level = "z"

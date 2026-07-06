@@ -91,7 +91,7 @@ lint-frontend:
 serve-frontend:
     cd apps/frontend && {{dx}} serve --fullstack --port 8080
 
-deploy-frontend: deploy-agent build-frontend
+deploy-frontend: deploy-agent
     #!/usr/bin/env bash
     set -euo pipefail
     image="gcr.io/{{project_id}}/frontend"
