@@ -55,15 +55,6 @@
         "cwd": "apps/frontend"
       }
     },
-    "serve-static": {
-      "continuous": true,
-      "executor": "@nx/web:file-server",
-      "options": {
-        "buildTarget": "frontend:build",
-        "staticFilePath": "apps/frontend/dist/web",
-        "spa": true
-      }
-    },
     "deploy": {
       "dependsOn": ["build"],
       "executor": "nx:run-commands",

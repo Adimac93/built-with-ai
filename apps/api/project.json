@@ -49,7 +49,7 @@
         "{projectRoot}/Cargo.lock"
       ],
       "options": {
-        "command": "cargo clippy -- -D warnings",
+        "command": "cargo clippy --all-targets -- -D warnings",
         "cwd": "apps/api"
       }
     },
