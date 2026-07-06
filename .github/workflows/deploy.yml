@@ -22,10 +22,10 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ env.SERVICE_ACCOUNT }}
@@ -39,7 +39,7 @@ jobs:
           docker push gcr.io/${{ env.PROJECT_ID }}/agent --all-tags
 
       - name: Deploy Agent to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v2
+        uses: google-github-actions/deploy-cloudrun@v3
         with:
           service: agent
           image: gcr.io/${{ env.PROJECT_ID }}/agent:${{ github.sha }}
@@ -49,42 +49,8 @@ jobs:
             GOOGLE_CLOUD_PROJECT=${{ env.PROJECT_ID }}
             GOOGLE_CLOUD_LOCATION=global
 
-  deploy-api:
-    needs: deploy-agent
-    runs-on: ubuntu-latest
-    permissions:
-      contents: 'read'
-      id-token: 'write' # Required for Workload Identity Federation
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ env.SERVICE_ACCOUNT }}
-
-      - name: Configure Docker
-        run: gcloud auth configure-docker --quiet
-
-      # The Rust binary is compiled inside the Docker multi-stage build,
-      # so no Node/Nx build step is needed for the API.
-      - name: Build and Push Docker Image
-        run: |
-          docker build --platform linux/amd64 -t gcr.io/${{ env.PROJECT_ID }}/api:${{ github.sha }} -t gcr.io/${{ env.PROJECT_ID }}/api:latest -f apps/api/Dockerfile .
-          docker push gcr.io/${{ env.PROJECT_ID }}/api --all-tags
-
-      - name: Deploy API to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v2
-        with:
-          service: api
-          image: gcr.io/${{ env.PROJECT_ID }}/api:${{ github.sha }}
-          region: ${{ env.REGION }}
-          flags: '--allow-unauthenticated'
-
   deploy-frontend:
+    needs: deploy-agent
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
@@ -92,7 +58,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -105,7 +71,7 @@ jobs:
       - run: cargo binstall -y just dioxus-cli
 
       - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ env.SERVICE_ACCOUNT }}
@@ -123,10 +89,28 @@ jobs:
           docker build --platform linux/amd64 -t gcr.io/${{ env.PROJECT_ID }}/frontend:${{ github.sha }} -t gcr.io/${{ env.PROJECT_ID }}/frontend:latest -f apps/frontend/Dockerfile .
           docker push gcr.io/${{ env.PROJECT_ID }}/frontend --all-tags
 
+      - name: Resolve Agent URL
+        id: agent
+        run: |
+          agent_url="$(
+            gcloud run services describe agent \
+              --platform managed \
+              --region us-east1 \
+              --project "${{ env.PROJECT_ID }}" \
+              --format='value(status.url)'
+          )"
+          if [[ -z "$agent_url" ]]; then
+            echo "Could not resolve AGENT_URL for Cloud Run service 'agent'." >&2
+            exit 1
+          fi
+          echo "url=$agent_url" >> "$GITHUB_OUTPUT"
+
       - name: Deploy Frontend to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v2
+        uses: google-github-actions/deploy-cloudrun@v3
         with:
           service: frontend
           image: gcr.io/${{ env.PROJECT_ID }}/frontend:${{ github.sha }}
           region: ${{ env.REGION }}
           flags: '--allow-unauthenticated'
+          env_vars: |
+            AGENT_URL=${{ steps.agent.outputs.url }}

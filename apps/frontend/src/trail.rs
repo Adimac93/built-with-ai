@@ -436,9 +436,11 @@ mod tests {
 
     #[test]
     fn tolerates_missing_sections() {
-        let r = response(json!({ "step1_problem": "p", "step3a_triz_candidates": {"candidates": [
-            {"principle_number": 1, "principle_name": "Segmentation", "idea": "i", "trace_id": "triz-1"},
-        ]}}));
+        let r = response(
+            json!({ "step1_problem": "p", "step3a_triz_candidates": {"candidates": [
+                {"principle_number": 1, "principle_name": "Segmentation", "idea": "i", "trace_id": "triz-1"},
+            ]}}),
+        );
         let trail = map_to_trail(&r, EvalMode::Pugh).unwrap();
         assert_eq!(trail.winner.score, 0);
         assert_eq!(trail.contradiction.better.tag, "Parametr ?");

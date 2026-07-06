@@ -95,18 +95,18 @@ An "engineering sheet" aesthetic — IBM Plex Mono, Big Shoulders Display, bluep
 ## 🏗️ Architecture
 
 ```
-┌───────────────┐        ┌───────────────┐         ┌────────────────────────┐
-│   Frontend    │  HTTP  │      API      │  HTTP   │         Agent          │
-│ Dioxus · WASM │───────▶│     axum      │────────▶│     axum · Rust        │
-│  SVG diagrams │        │  /solve       │         │  TRIZ+SCAMPER pipeline │
-│  (Cloud Run)  │◀───────│  /speech/...  │◀────────│  (Cloud Run · us-east1)│
-└───────────────┘        └───────┬───────┘         └────────────┬───────────┘
-                                 │                              │
-                          Google Cloud STT                Gemini · Vertex AI
+┌────────────────────────┐         ┌────────────────────────┐
+│        Frontend        │  HTTP   │         Agent          │
+│ Dioxus fullstack · WASM│────────▶│     axum · Rust        │
+│ server functions       │         │  TRIZ+SCAMPER pipeline │
+│ solve + speech proxy   │◀────────│  (Cloud Run · us-east1)│
+│ (Cloud Run)            │         └────────────┬───────────┘
+└───────────┬────────────┘                      │
+            │                            Gemini · Vertex AI
+     Google Cloud STT
 ```
 
-- **`apps/frontend`** — Dioxus 0.7 (Rust → WebAssembly), signals, router. Design-token CSS + scoped Heureka theme.
-- **`apps/api`** — axum gateway. Proxies `/solve` to the agent, hosts `/speech/transcribe`.
+- **`apps/frontend`** — Dioxus 0.7 fullstack app (Rust → WebAssembly + Axum server functions), signals, router, design-token CSS, `/api/solve`, and `/api/speech/transcribe`.
 - **`apps/agent`** — axum service running the TRIZ+SCAMPER pipeline: six Gemini calls + deterministic matrix lookup and argmax choice.
 
 ---
@@ -118,7 +118,7 @@ An "engineering sheet" aesthetic — IBM Plex Mono, Big Shoulders Display, bluep
 (`cargo binstall dioxus-cli`), and `gcloud` authenticated for Vertex AI.
 
 ```bash
-# run agent (:8000) + api (:3000) + frontend (:8080) together
+# run agent (:8000) + fullstack frontend (:8080) together
 just dev
 ```
 
@@ -126,8 +126,7 @@ Or run apps individually:
 
 ```bash
 just serve-agent            # http://localhost:8000  (Gemini via your gcloud token)
-just serve-api              # http://localhost:3000/api
-just serve-frontend         # http://localhost:8080
+just serve-frontend         # http://localhost:8080  (serves UI + /api/* server functions)
 ```
 
 ---
@@ -136,8 +135,7 @@ just serve-frontend         # http://localhost:8080
 
 | Layer | Tech |
 |-------|------|
-| Frontend | Rust · Dioxus 0.7 (WASM) · SVG diagrams · CSS design tokens |
-| API | Rust · axum · Google Cloud Speech-to-Text |
+| Frontend | Rust · Dioxus 0.7 fullstack (WASM + Axum server functions) · SVG diagrams · CSS design tokens · Google Cloud Speech-to-Text proxy |
 | Agent | Rust · axum · Gemini (Vertex AI REST) · TRIZ matrix in code |
 | Tooling | cargo · just · clippy · dioxus-cli |
 | Infra | Google Cloud Run · Terraform · Docker |
@@ -148,14 +146,14 @@ just serve-frontend         # http://localhost:8080
 
 ```
 apps/
-├── frontend/          Dioxus app — the Heureka UI
+├── frontend/          Dioxus fullstack app — UI + solve/speech server functions
 │   └── src/
 │       ├── pages/         analysis · methods · architecture · team
 │       ├── diagrams/      pipeline + architecture (SVG)
+│       ├── server.rs      agent proxy + Google Speech-to-Text server logic
 │       ├── trail.rs       /solve response → reasoning trail (unit-tested)
 │       ├── state.rs       config · a11y · diagram-highlight signals
 │       └── layout.rs      sheet layout (masthead + a11y controls)
-├── api/               axum gateway (solve + speech proxy)
 └── agent/             axum agent service
     └── src/pipeline/      the TRIZ+SCAMPER pipeline (prompts, schemas)
 ```
@@ -167,9 +165,8 @@ apps/
 Everything runs on **Google Cloud Run**.
 
 ```bash
-just deploy             # agent → api → frontend, in dependency order
-just deploy-api         # resolves the live agent URL, builds, deploys
-just deploy-frontend
+just deploy             # agent → fullstack frontend, in dependency order
+just deploy-frontend    # resolves the live agent URL, builds, deploys
 ```
 
 The agent's infrastructure (service, service account, public-invoker IAM) is managed by
@@ -182,7 +179,7 @@ redeploys instead of drifting into 403s.
 
 | Command | Does |
 |---------|------|
-| `just dev` | Run agent + api + frontend together |
+| `just dev` | Run agent + fullstack frontend together |
 | `just build` | Release build of everything |
 | `just test` | Test every app |
 | `just lint` | Clippy on every app (warnings are errors) |

@@ -1,4 +1,4 @@
-# Heureka — task runner for the Rust workspace (agent, api, frontend).
+# Heureka — task runner for the Rust workspace (agent, fullstack frontend).
 # `just --list` shows everything; `just ci` mirrors the CI pipeline.
 
 # dioxus-cli; explicit cargo-bin default because deno ships a conflicting `dx` alias
@@ -14,12 +14,12 @@ default:
 
 # ── aggregate ────────────────────────────────────────────────────────────────
 
-build: build-agent build-api build-frontend
+build: build-agent build-frontend
 
 test:
     cargo test --workspace
 
-lint: lint-agent lint-api lint-frontend
+lint: lint-agent lint-frontend
 
 fmt:
     cargo fmt --all
@@ -27,13 +27,12 @@ fmt:
 # what CI runs
 ci: lint test build
 
-# run all three apps (agent :8000, api :3000, frontend :8080); Ctrl-C stops all
+# run agent (:8000) + fullstack frontend (:8080); Ctrl-C stops both
 dev:
     #!/usr/bin/env bash
     set -euo pipefail
     trap 'kill 0' EXIT
     just serve-agent &
-    just serve-api &
     just serve-frontend &
     wait
 
@@ -67,26 +66,35 @@ deploy-agent:
       --project "{{project_id}}" \
       --update-env-vars "GOOGLE_CLOUD_PROJECT={{project_id}},GOOGLE_CLOUD_LOCATION=global"
 
-# ── api (apps/api → Cloud Run us-central1) ──────────────────────────────────
+# ── frontend (apps/frontend, Dioxus fullstack → Cloud Run us-central1) ──────
 
-build-api:
-    cargo build --release -p api
-
-test-api:
-    cargo test -p api
-
-lint-api:
-    cargo clippy --all-targets -p api -- -D warnings
-
-# AGENT_URL defaults to http://localhost:8000 inside the binary
-serve-api:
-    cargo run --release -p api
-
-# resolves AGENT_URL from the deployed agent service — deploy agent first
-deploy-api: deploy-agent
+# Build and stage the Dioxus fullstack bundle in apps/frontend/dist/web.
+build-frontend:
     #!/usr/bin/env bash
     set -euo pipefail
-    image="gcr.io/{{project_id}}/api"
+    dx_out="{{justfile_directory()}}/target/dx/frontend/release/web"
+    cd "{{justfile_directory()}}/apps/frontend"
+    rm -rf "$dx_out"
+    "{{dx}}" build --release --fullstack --force-sequential
+    rm -rf dist/web
+    mkdir -p dist
+    cp -R "$dx_out" dist/web
+    echo "Frontend bundle staged in apps/frontend/dist/web"
+
+test-frontend:
+    cargo test -p frontend
+
+lint-frontend:
+    cargo clippy --target wasm32-unknown-unknown -p frontend -- -D warnings
+    cargo clippy -p frontend --no-default-features --features server -- -D warnings
+
+serve-frontend:
+    cd apps/frontend && {{dx}} serve --fullstack --port 8080
+
+deploy-frontend: deploy-agent build-frontend
+    #!/usr/bin/env bash
+    set -euo pipefail
+    image="gcr.io/{{project_id}}/frontend"
     echo "Resolving agent Cloud Run URL in {{project_id}}/{{agent_region}}..."
     agent_url="$(
       gcloud run services describe agent \
@@ -99,47 +107,7 @@ deploy-api: deploy-agent
       echo "Could not resolve AGENT_URL for Cloud Run service 'agent'." >&2
       exit 1
     fi
-    echo "Deploying api with AGENT_URL=$agent_url"
-    docker build --no-cache --platform linux/amd64 -t "$image" -f apps/api/Dockerfile .
-    docker push "$image"
-    gcloud run deploy api \
-      --image "$image" \
-      --platform managed \
-      --region "{{region}}" \
-      --allow-unauthenticated \
-      --project "{{project_id}}" \
-      --update-env-vars "AGENT_URL=$agent_url"
-
-# ── frontend (apps/frontend, Dioxus/WASM → Cloud Run us-central1) ───────────
-
-# dx writes into the workspace target dir; stale hashed bundles are purged so
-# they don't accumulate into the nginx image. Staged output: apps/frontend/dist/web
-build-frontend:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    dx_out="{{justfile_directory()}}/target/dx/frontend/release/web/public"
-    cd "{{justfile_directory()}}/apps/frontend"
-    rm -rf "$dx_out"
-    "{{dx}}" build --release
-    rm -rf dist/web
-    mkdir -p dist
-    cp -R "$dx_out" dist/web
-    echo "Frontend bundle staged in apps/frontend/dist/web"
-
-test-frontend:
-    cargo test -p frontend
-
-lint-frontend:
-    cargo clippy --target wasm32-unknown-unknown -p frontend -- -D warnings
-
-serve-frontend:
-    cd apps/frontend && {{dx}} serve --port 8080
-
-deploy-frontend: build-frontend
-    #!/usr/bin/env bash
-    set -euo pipefail
-    image="gcr.io/{{project_id}}/frontend"
-    echo "Deploying frontend to Cloud Run {{project_id}}/{{region}}"
+    echo "Deploying frontend to Cloud Run {{project_id}}/{{region}} with AGENT_URL=$agent_url"
     docker build --platform linux/amd64 -t "$image" -f apps/frontend/Dockerfile .
     docker push "$image"
     gcloud run deploy frontend \
@@ -147,7 +115,8 @@ deploy-frontend: build-frontend
       --platform managed \
       --region "{{region}}" \
       --allow-unauthenticated \
-      --project "{{project_id}}"
+      --project "{{project_id}}" \
+      --update-env-vars "AGENT_URL=$agent_url"
 
 # full deploy in dependency order
-deploy: deploy-api deploy-frontend
+deploy: deploy-frontend

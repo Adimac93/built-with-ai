@@ -11,7 +11,7 @@ pub fn ArchitecturePage() -> Element {
         p { class: "eyebrow", "Mapa systemu" }
         h1 { "Architektura" }
         p { class: "lead",
-            "Pełny przepływ od użytkownika do agenta: Dioxus zbiera problem, API w axum pośredniczy w analizie i transkrypcji, a agent w Rust uruchamia pipeline TRIZ/SCAMPER na Google Cloud Platform."
+            "Pełny przepływ od użytkownika do agenta: Dioxus fullstack zbiera problem, funkcje serwerowe w tym samym kontenerze pośredniczą w analizie i transkrypcji, a agent w Rust uruchamia pipeline TRIZ/SCAMPER na Google Cloud Platform."
         }
 
         section { class: "architecture-panel", aria_labelledby: "architecture-h",
@@ -36,17 +36,17 @@ pub fn ArchitecturePage() -> Element {
                     span { class: "doc-card__tag", "UI" }
                     h3 { "Dioxus + WebAssembly" }
                     p {
-                        "Interfejs renderuje formularz, trail rozumowania, diagram pipeline i kontrolki dostępności. Konfiguracja API przychodzi z publicznego "
-                        code { "config.json" }
-                        "."
+                        "Interfejs renderuje formularz, trail rozumowania, diagram pipeline i kontrolki dostępności. Wywołania "
+                        code { "/api/*" }
+                        " obsługują wygenerowane klienty Dioxus server functions."
                     }
                 }
                 article { class: "doc-card",
-                    span { class: "doc-card__tag", "Gateway" }
-                    h3 { "Axum API" }
+                    span { class: "doc-card__tag", "Fullstack" }
+                    h3 { "Dioxus server functions" }
                     p {
-                        "API ukrywa integracje serwerowe: przekazuje "
-                        code { "/solve" }
+                        "Ten sam kontener Cloud Run ukrywa integracje serwerowe: przekazuje "
+                        code { "/api/solve" }
                         " do agenta i wysyła nagrania audio do Google Cloud Speech-to-Text."
                     }
                 }

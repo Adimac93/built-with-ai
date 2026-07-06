@@ -130,13 +130,31 @@ fn edges() -> Vec<Edge> {
     let right = |x: f64| port_point(x, CY - NH / 2.0, NW, NH, Port::Right);
     let left = |x: f64| port_point(x, CY - NH / 2.0, NW, NH, Port::Left);
     vec![
-        Edge { from: right(sx(0.0)), to: left(sx(1.0)) },
-        Edge { from: right(sx(1.0)), to: left(sx(2.0)) },
-        Edge { from: right(sx(2.0)), to: left(sx(3.0)) },
+        Edge {
+            from: right(sx(0.0)),
+            to: left(sx(1.0)),
+        },
+        Edge {
+            from: right(sx(1.0)),
+            to: left(sx(2.0)),
+        },
+        Edge {
+            from: right(sx(2.0)),
+            to: left(sx(3.0)),
+        },
         // criteria → group, group → evaluator (group anchors at its own rect)
-        Edge { from: right(sx(3.0)), to: port_point(GX, GY, GW, GH, Port::Left) },
-        Edge { from: port_point(GX, GY, GW, GH, Port::Right), to: left(GX + GW + GAP) },
-        Edge { from: right(GX + GW + GAP), to: left(GX + GW + GAP + NW + GAP) },
+        Edge {
+            from: right(sx(3.0)),
+            to: port_point(GX, GY, GW, GH, Port::Left),
+        },
+        Edge {
+            from: port_point(GX, GY, GW, GH, Port::Right),
+            to: left(GX + GW + GAP),
+        },
+        Edge {
+            from: right(GX + GW + GAP),
+            to: left(GX + GW + GAP + NW + GAP),
+        },
         Edge {
             from: right(GX + GW + GAP + NW + GAP),
             to: left(GX + GW + GAP + (NW + GAP) * 2.0),

@@ -3,9 +3,7 @@
 
 use dioxus::prelude::*;
 
-use crate::state::{
-    apply_a11y_effects, DARK_MODE, FONT_STEPS, FONT_STEP_INDEX, HIGH_CONTRAST,
-};
+use crate::state::{apply_a11y_effects, DARK_MODE, FONT_STEPS, FONT_STEP_INDEX, HIGH_CONTRAST};
 use crate::Route;
 
 struct SheetMeta {

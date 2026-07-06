@@ -6,12 +6,10 @@ WORKDIR /app
 # source edits don't invalidate the compiled dependency layer. All member
 # manifests are needed for the workspace to parse.
 COPY Cargo.toml Cargo.lock ./
-COPY apps/api/Cargo.toml apps/api/
 COPY apps/agent/Cargo.toml apps/agent/
 COPY apps/frontend/Cargo.toml apps/frontend/
 COPY apps/agent/triz.json apps/agent/triz.json
-RUN mkdir -p apps/api/src apps/agent/src apps/frontend/src \
-  && echo 'fn main() {}' > apps/api/src/main.rs \
+RUN mkdir -p apps/agent/src apps/frontend/src \
   && echo 'fn main() {}' > apps/agent/src/main.rs \
   && echo 'fn main() {}' > apps/frontend/src/main.rs \
   && cargo build --release -p agent \

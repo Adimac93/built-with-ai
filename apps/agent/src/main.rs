@@ -154,7 +154,10 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(response.status(), StatusCode::OK);
-        assert_eq!(body_json(response.into_body()).await, json!({ "status": "ok" }));
+        assert_eq!(
+            body_json(response.into_body()).await,
+            json!({ "status": "ok" })
+        );
     }
 
     #[tokio::test]
@@ -168,7 +171,9 @@ mod tests {
             .oneshot(
                 Request::post("/solve")
                     .header("content-type", "application/json")
-                    .body(Body::from(r#"{"problem":"my machine overheats under load"}"#))
+                    .body(Body::from(
+                        r#"{"problem":"my machine overheats under load"}"#,
+                    ))
                     .unwrap(),
             )
             .await
@@ -215,7 +220,10 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(response.status(), StatusCode::OK);
-        assert_eq!(body_json(response.into_body()).await, json!({ "status": "success" }));
+        assert_eq!(
+            body_json(response.into_body()).await,
+            json!({ "status": "success" })
+        );
     }
 
     #[tokio::test]
@@ -236,7 +244,10 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(
-            response.headers().get("access-control-allow-origin").unwrap(),
+            response
+                .headers()
+                .get("access-control-allow-origin")
+                .unwrap(),
             "http://localhost:4200"
         );
     }

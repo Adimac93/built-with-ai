@@ -19,9 +19,21 @@ pub const TRIZ_PARAMETERS_TEXT: &str = "\
 
 /// (letter, name, hint) — defined by the system, not the LLM.
 pub const SCAMPER_OPERATORS: [(&str, &str, &str); 7] = [
-    ("S", "Substitute", "What materials, processes, or components can be substituted?"),
-    ("C", "Combine", "What elements or ideas can be merged or combined?"),
-    ("A", "Adapt", "What can be adapted or borrowed from other domains?"),
+    (
+        "S",
+        "Substitute",
+        "What materials, processes, or components can be substituted?",
+    ),
+    (
+        "C",
+        "Combine",
+        "What elements or ideas can be merged or combined?",
+    ),
+    (
+        "A",
+        "Adapt",
+        "What can be adapted or borrowed from other domains?",
+    ),
     (
         "M",
         "Modify/Magnify/Minimize",
@@ -32,8 +44,16 @@ pub const SCAMPER_OPERATORS: [(&str, &str, &str); 7] = [
         "Put to other uses",
         "How can existing elements be used for different purposes?",
     ),
-    ("E", "Eliminate", "What can be removed, simplified, or reduced to its core?"),
-    ("R", "Reverse/Rearrange", "What can be reversed, inverted, or reordered?"),
+    (
+        "E",
+        "Eliminate",
+        "What can be removed, simplified, or reduced to its core?",
+    ),
+    (
+        "R",
+        "Reverse/Rearrange",
+        "What can be reversed, inverted, or reordered?",
+    ),
 ];
 
 /// Step 1 system instruction; the raw user problem goes in the user turn.

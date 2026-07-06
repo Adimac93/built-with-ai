@@ -8,34 +8,9 @@ use dioxus::prelude::*;
 
 // ── Runtime config (Angular: ConfigProvider + APP_INITIALIZER) ──
 
-/// Fallback for local development (`dx serve` has no /config.json).
-const DEFAULT_API_URL: &str = "http://localhost:3000/api";
-
-pub static API_URL: GlobalSignal<String> = Signal::global(|| DEFAULT_API_URL.to_string());
-
-/// Fetches `/config.json` (swapped per environment without rebuild) and
-/// stores `apiUrl`. Failure keeps the localhost default.
-pub async fn load_config() {
-    #[derive(serde::Deserialize)]
-    #[serde(rename_all = "camelCase")]
-    struct AppConfig {
-        api_url: String,
-    }
-    let loaded = async {
-        reqwest::get("/config.json")
-            .await
-            .ok()?
-            .json::<AppConfig>()
-            .await
-            .ok()
-    }
-    .await;
-    if let Some(config) = loaded {
-        if !config.api_url.is_empty() {
-            *API_URL.write() = config.api_url;
-        }
-    }
-}
+/// Historical startup hook from the static frontend. The fullstack build uses
+/// Dioxus server functions, so there is no runtime API base URL to load.
+pub async fn load_config() {}
 
 // ── Accessibility (Angular: AccessibilityService) ──
 
@@ -45,8 +20,10 @@ const STORAGE_CONTRAST: &str = "heureka.a11y.contrast";
 const STORAGE_DARK: &str = "heureka.a11y.dark";
 const STORAGE_FONT_STEP: &str = "heureka.a11y.fontStep";
 
-pub static HIGH_CONTRAST: GlobalSignal<bool> = Signal::global(|| storage_get(STORAGE_CONTRAST) == Some("true".into()));
-pub static DARK_MODE: GlobalSignal<bool> = Signal::global(|| storage_get(STORAGE_DARK) == Some("true".into()));
+pub static HIGH_CONTRAST: GlobalSignal<bool> =
+    Signal::global(|| storage_get(STORAGE_CONTRAST) == Some("true".into()));
+pub static DARK_MODE: GlobalSignal<bool> =
+    Signal::global(|| storage_get(STORAGE_DARK) == Some("true".into()));
 pub static FONT_STEP_INDEX: GlobalSignal<usize> = Signal::global(|| {
     storage_get(STORAGE_FONT_STEP)
         .and_then(|raw| raw.parse::<usize>().ok())
@@ -54,10 +31,21 @@ pub static FONT_STEP_INDEX: GlobalSignal<usize> = Signal::global(|| {
         .unwrap_or(0)
 });
 
+#[cfg(target_arch = "wasm32")]
 fn storage_get(key: &str) -> Option<String> {
-    web_sys::window()?.local_storage().ok()??.get_item(key).ok()?
+    web_sys::window()?
+        .local_storage()
+        .ok()??
+        .get_item(key)
+        .ok()?
 }
 
+#[cfg(not(target_arch = "wasm32"))]
+fn storage_get(_key: &str) -> Option<String> {
+    None
+}
+
+#[cfg(target_arch = "wasm32")]
 fn storage_set(key: &str, value: &str) {
     // Storage unavailable (private mode) — preference stays in-memory.
     if let Some(Ok(Some(storage))) = web_sys::window().map(|w| w.local_storage()) {
@@ -65,39 +53,57 @@ fn storage_set(key: &str, value: &str) {
     }
 }
 
-fn document_root() -> Option<web_sys::HtmlElement> {
+#[cfg(not(target_arch = "wasm32"))]
+fn storage_set(_key: &str, _value: &str) {}
+
+#[cfg(target_arch = "wasm32")]
+fn set_root_class(class_name: &str, on: bool) {
     use wasm_bindgen::JsCast;
-    web_sys::window()?
-        .document()?
-        .document_element()?
-        .dyn_into::<web_sys::HtmlElement>()
-        .ok()
+    if let Some(root) = web_sys::window()
+        .and_then(|window| window.document())
+        .and_then(|document| document.document_element())
+        .and_then(|element| element.dyn_into::<web_sys::HtmlElement>().ok())
+    {
+        let _ = root.class_list().toggle_with_force(class_name, on);
+    }
 }
+
+#[cfg(not(target_arch = "wasm32"))]
+fn set_root_class(_class_name: &str, _on: bool) {}
+
+#[cfg(target_arch = "wasm32")]
+fn set_root_font_size(percent: u32) {
+    use wasm_bindgen::JsCast;
+    if let Some(root) = web_sys::window()
+        .and_then(|window| window.document())
+        .and_then(|document| document.document_element())
+        .and_then(|element| element.dyn_into::<web_sys::HtmlElement>().ok())
+    {
+        let _ = root
+            .style()
+            .set_property("font-size", &format!("{percent}%"));
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn set_root_font_size(_percent: u32) {}
 
 /// Reflects the a11y signals onto `<html>` (classes + font-size) and
 /// persists them — the CSS token overrides react to the classes.
 pub fn apply_a11y_effects() {
     use_effect(|| {
         let on = *HIGH_CONTRAST.read();
-        if let Some(root) = document_root() {
-            let _ = root.class_list().toggle_with_force("a11y-contrast", on);
-        }
+        set_root_class("a11y-contrast", on);
         storage_set(STORAGE_CONTRAST, if on { "true" } else { "false" });
     });
     use_effect(|| {
         let on = *DARK_MODE.read();
-        if let Some(root) = document_root() {
-            let _ = root.class_list().toggle_with_force("a11y-dark", on);
-        }
+        set_root_class("a11y-dark", on);
         storage_set(STORAGE_DARK, if on { "true" } else { "false" });
     });
     use_effect(|| {
         let index = *FONT_STEP_INDEX.read();
-        if let Some(root) = document_root() {
-            let _ = root
-                .style()
-                .set_property("font-size", &format!("{}%", FONT_STEPS[index]));
-        }
+        set_root_font_size(FONT_STEPS[index]);
         storage_set(STORAGE_FONT_STEP, &index.to_string());
     });
 }

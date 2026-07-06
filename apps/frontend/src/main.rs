@@ -4,6 +4,8 @@ mod api;
 mod diagrams;
 mod layout;
 mod pages;
+#[cfg(feature = "server")]
+mod server;
 mod speech;
 mod state;
 mod trail;
@@ -34,7 +36,7 @@ enum Route {
 
 #[component]
 fn App() -> Element {
-    // Runtime config (Angular's APP_INITIALIZER equivalent) — non-blocking.
+    // Kept as a non-blocking hook for parity with the old app startup path.
     use_future(state::load_config);
     use_effect(|| {
         document::eval("document.documentElement.lang = 'pl';");
@@ -57,6 +59,12 @@ fn App() -> Element {
     }
 }
 
+#[cfg(not(feature = "server"))]
 fn main() {
     dioxus::launch(App);
+}
+
+#[cfg(feature = "server")]
+fn main() {
+    server::main();
 }

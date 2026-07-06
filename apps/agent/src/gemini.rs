@@ -43,7 +43,9 @@ impl GeminiClient {
     /// Builds the client from the environment. `GEMINI_BASE_URL` overrides the
     /// endpoint (used by integration tests to point at a mock server).
     pub fn from_env() -> Self {
-        let api_key = std::env::var("GEMINI_API_KEY").ok().filter(|k| !k.is_empty());
+        let api_key = std::env::var("GEMINI_API_KEY")
+            .ok()
+            .filter(|k| !k.is_empty());
         let auth = match &api_key {
             Some(key) => GeminiAuth::ApiKey(key.clone()),
             None => GeminiAuth::Vertex,
@@ -118,7 +120,9 @@ impl GeminiClient {
                 }
             }
         }
-        Err(AgentError::internal(format!("Gemini call failed: {last_error}")))
+        Err(AgentError::internal(format!(
+            "Gemini call failed: {last_error}"
+        )))
     }
 
     /// Structured call: JSON output parsed into `T`.
@@ -147,9 +151,15 @@ impl GeminiClient {
             }
         };
 
-        let response = request.send().await.map_err(|err| (true, err.to_string()))?;
+        let response = request
+            .send()
+            .await
+            .map_err(|err| (true, err.to_string()))?;
         let status = response.status();
-        let data: Value = response.json().await.map_err(|err| (true, err.to_string()))?;
+        let data: Value = response
+            .json()
+            .await
+            .map_err(|err| (true, err.to_string()))?;
 
         if !status.is_success() {
             let detail = data

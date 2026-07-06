@@ -1,10 +1,14 @@
-FROM docker.io/nginx:alpine
+FROM docker.io/debian:bookworm-slim
 
-# Set default port if not provided by Cloud Run
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+ENV IP=0.0.0.0
 ENV PORT=8080
 
-COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf.template
-COPY apps/frontend/dist/web /usr/share/nginx/html
+WORKDIR /app
+COPY apps/frontend/dist/web/server /app/server
+COPY apps/frontend/dist/web/public /app/public
 
-# Substitute $PORT in the nginx config template and start nginx
-CMD ["/bin/sh", "-c", "envsubst '${PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD ["/app/server"]

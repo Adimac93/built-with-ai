@@ -2,11 +2,10 @@
 
 Heureka — an inventive problem solver (TRIZ + SCAMPER) built entirely in Rust:
 
-- `apps/frontend` — Dioxus 0.7 web app (WASM), UI language is Polish
-- `apps/api` — axum gateway (`/solve` proxy, `/speech/transcribe`)
+- `apps/frontend` — Dioxus 0.7 fullstack app (WASM + server functions), UI language is Polish, proxies solve and speech requests
 - `apps/agent` — axum service running the TRIZ+SCAMPER pipeline against Gemini (Vertex AI REST)
 
-The three crates form a cargo workspace (root `Cargo.toml`; shared deps via
+The two crates form a cargo workspace (root `Cargo.toml`; shared deps via
 `workspace.dependencies`, single root `Cargo.lock` and `target/`). Everything deploys to
 Google Cloud Run; the agent's infra is Terraform under `apps/agent/deployment/terraform/`.
 
@@ -15,8 +14,8 @@ Google Cloud Run; the agent's infra is Terraform under `apps/agent/deployment/te
 Use `just` for all tasks (`just --list` shows everything):
 
 - `just ci` — lint + test + build, exactly what CI runs; run it before claiming work done
-- `just dev` — run all three apps locally (agent :8000, api :3000, frontend :8080)
-- `just test-api` / `lint-agent` / `build-frontend` etc. — per-app targets
+- `just dev` — run agent (:8000) and fullstack frontend (:8080) locally
+- `just test-agent` / `lint-agent` / `build-frontend` etc. — per-app targets
 - The frontend builds with `dioxus-cli`; the local `dx` on PATH is deno's alias — scripts
   default to `~/.cargo/bin/dx` (override with `DX_BIN`)
 
@@ -24,10 +23,9 @@ Use `just` for all tasks (`just --list` shows everything):
 
 - Clippy is authoritative: `-D warnings`, `--all-targets` (frontend lints for the
   `wasm32-unknown-unknown` target)
-- The `/solve` trail JSON shape is a frozen contract between agent, api, and frontend —
+- The `/solve` trail JSON shape is a frozen contract between agent and frontend —
   `step2a_lookup.principles[].number` must stay a **string**; the 8 trail keys must not change
-- API error bodies mirror the old NestJS shape (`statusCode`/`message`/`error`); the agent
-  mirrors FastAPI's `{"detail": ...}`
+- The agent mirrors FastAPI's `{"detail": ...}` error shape
 - `apps/frontend/assets/heureka.css` is compiled output of the old SCSS design tokens —
   edit it directly, there is no SCSS toolchain anymore
 - Never change the Gemini model (`gemini-flash-latest`) unless explicitly asked;

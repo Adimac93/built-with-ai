@@ -14,7 +14,11 @@ use crate::triz;
 pub async fn run(gemini: &GeminiClient, raw_problem: &str) -> Result<Value, AgentError> {
     // Step 1 — problem normalizer (plain text).
     let problem = gemini
-        .generate_text(Some(prompts::NORMALIZER_INSTRUCTION), raw_problem, Output::Text)
+        .generate_text(
+            Some(prompts::NORMALIZER_INSTRUCTION),
+            raw_problem,
+            Output::Text,
+        )
         .await?;
 
     // Step 2 — contradiction extractor (structured).
@@ -31,12 +35,16 @@ pub async fn run(gemini: &GeminiClient, raw_problem: &str) -> Result<Value, Agen
         build_lookup(contradiction.improving_param, contradiction.worsening_param);
     tracing::info!(
         "TRIZ lookup: {} → {}, principles: {principles_text}",
-        lookup["improving_name"], lookup["worsening_name"]
+        lookup["improving_name"],
+        lookup["worsening_name"]
     );
 
     // Step 1a — criteria extractor (structured).
     let criteria: schemas::EvaluationCriteria = gemini
-        .generate_json(&prompts::criteria_prompt(&problem), Some(&schemas::criteria_schema()))
+        .generate_json(
+            &prompts::criteria_prompt(&problem),
+            Some(&schemas::criteria_schema()),
+        )
         .await?;
     let criteria = serde_json::to_value(criteria).expect("criteria serializes");
 
@@ -68,7 +76,11 @@ pub async fn run(gemini: &GeminiClient, raw_problem: &str) -> Result<Value, Agen
 
     // Step 5 — deterministic argmax choice.
     let choice = select_winner(&evaluation);
-    tracing::info!("Choice: {} (score: {})", choice["winner_id"], choice["winner_total"]);
+    tracing::info!(
+        "Choice: {} (score: {})",
+        choice["winner_id"],
+        choice["winner_total"]
+    );
 
     // Trail assembly — exact key set the frontend consumes.
     Ok(json!({
@@ -91,8 +103,10 @@ fn build_lookup(improving: i64, worsening: i64) -> (Value, String) {
         Vec::new()
     });
 
-    let principle_dicts: Vec<Value> =
-        principles.iter().map(|&p| triz::get_principle_description(p)).collect();
+    let principle_dicts: Vec<Value> = principles
+        .iter()
+        .map(|&p| triz::get_principle_description(p))
+        .collect();
     let principles_text = if principle_dicts.is_empty() {
         "No principles found in matrix for this pair".to_string()
     } else {
@@ -158,7 +172,11 @@ mod tests {
     #[test]
     fn winner_is_argmax_of_totals() {
         let evaluation = EvaluationResult {
-            evaluations: vec![score("triz-2", 505), score("scamper-A", 525), score("scamper-S", 475)],
+            evaluations: vec![
+                score("triz-2", 505),
+                score("scamper-A", 525),
+                score("scamper-S", 475),
+            ],
         };
         let choice = select_winner(&evaluation);
         assert_eq!(choice["winner_id"], "scamper-A");
@@ -171,7 +189,9 @@ mod tests {
 
     #[test]
     fn empty_evaluations_falls_back_to_none() {
-        let choice = select_winner(&EvaluationResult { evaluations: vec![] });
+        let choice = select_winner(&EvaluationResult {
+            evaluations: vec![],
+        });
         assert_eq!(choice["winner_id"], "none");
         assert_eq!(choice["winner_total"], 0);
         assert_eq!(choice["reasoning"], "No evaluations available");

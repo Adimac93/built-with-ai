@@ -22,8 +22,16 @@ const PHASE_INTERVAL_MS: u32 = 8000;
 
 const PHASE_NODES: [&[&str]; 4] = [
     &["problem_normalizer"],
-    &["contradiction_extractor", "triz_lookup", "criteria_extractor"],
-    &["candidate_generators", "triz_generator", "scamper_generator"],
+    &[
+        "contradiction_extractor",
+        "triz_lookup",
+        "criteria_extractor",
+    ],
+    &[
+        "candidate_generators",
+        "triz_generator",
+        "scamper_generator",
+    ],
     &["evaluator"],
 ];
 const COMPLETION_NODES: &[&str] = &["choice_selector", "trail_assembler"];
@@ -204,10 +212,20 @@ pub fn AnalysisPage() -> Element {
                             disabled: running() || transcribing() || !speech_ready,
                             onclick: toggle_recording,
                             span { class: "material-icons", aria_hidden: "true",
-                                if recording() { "stop" } else { "mic" }
+                                if recording() {
+                                    "stop"
+                                } else {
+                                    "mic"
+                                }
                             }
                             span {
-                                if recording() { "Zatrzymaj" } else if transcribing() { "Transkrypcja" } else { "Mikrofon" }
+                                if recording() {
+                                    "Zatrzymaj"
+                                } else if transcribing() {
+                                    "Transkrypcja"
+                                } else {
+                                    "Mikrofon"
+                                }
                             }
                         }
                         span { aria_hidden: "true", "Pole 01" }
@@ -222,7 +240,10 @@ pub fn AnalysisPage() -> Element {
                     oninput: move |e| problem.set(e.value()),
                 }
                 if !speech_status().is_empty() {
-                    p { class: "form__speech-status", id: "speech-status", role: "status",
+                    p {
+                        class: "form__speech-status",
+                        id: "speech-status",
+                        role: "status",
                         "{speech_status}"
                     }
                 }
@@ -244,11 +265,12 @@ pub fn AnalysisPage() -> Element {
                     fieldset { class: "opt",
                         legend { "Sposób ewaluacji kandydatów" }
                         div { class: "chips",
-                            for (mode, value, label) in [
+                            for (mode , value , label) in [
                                 (EvalMode::Rubryka, "rubryka", "Rubryka ważona"),
                                 (EvalMode::Pugh, "pugh", "Macierz Pugha"),
                                 (EvalMode::Pary, "pary", "Porównanie parami"),
-                            ] {
+                            ]
+                            {
                                 label { class: "chip",
                                     input {
                                         r#type: "radio",
@@ -265,7 +287,12 @@ pub fn AnalysisPage() -> Element {
                 }
 
                 if !error().is_empty() {
-                    p { class: "form__error", id: "form-error", role: "alert", "{error}" }
+                    p {
+                        class: "form__error",
+                        id: "form-error",
+                        role: "alert",
+                        "{error}"
+                    }
                 }
 
                 div { class: "form__foot",
@@ -306,7 +333,9 @@ pub fn AnalysisPage() -> Element {
                 aria_labelledby: "pipeline-modal-h",
                 div { class: "pipeline-modal__panel",
                     div { class: "pipeline-modal__head",
-                        span { id: "pipeline-modal-h", class: "pipeline-modal__title",
+                        span {
+                            id: "pipeline-modal-h",
+                            class: "pipeline-modal__title",
                             "Pipeline w trakcie"
                         }
                         span { class: "pipeline-modal__status", role: "status", "{status}" }
@@ -415,13 +444,15 @@ fn trail_view(t: &Trail) -> Element {
                         }
                     }
                     tbody {
-                        for (i, c) in t.ranked.iter().enumerate() {
+                        for (i , c) in t.ranked.iter().enumerate() {
                             tr { class: if i == 0 { "win" },
                                 td { "{c.name}" }
                                 td { "{c.source}" }
                                 td {
                                     div { class: "scores__result",
-                                        span { class: "scores__track", aria_hidden: "true",
+                                        span {
+                                            class: "scores__track",
+                                            aria_hidden: "true",
                                             span {
                                                 class: "bar",
                                                 style: "width: {c.score as f64 / top_score as f64 * 100.0}%;",
@@ -438,7 +469,9 @@ fn trail_view(t: &Trail) -> Element {
 
             section { class: "step", aria_labelledby: "s5",
                 div { class: "step__no", aria_hidden: "true", "5" }
-                p { class: "step__kicker", "Krok 5 · deterministyczny argmax — wybiera kod, nie model" }
+                p { class: "step__kicker",
+                    "Krok 5 · deterministyczny argmax — wybiera kod, nie model"
+                }
                 h3 { id: "s5", "Wybór" }
                 div { class: "choice",
                     p { class: "stamp", aria_hidden: "true", "Wybrano" }
