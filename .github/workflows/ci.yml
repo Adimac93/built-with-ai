@@ -21,11 +21,6 @@ jobs:
           targets: wasm32-unknown-unknown
 
       - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: |
-            apps/agent
-            apps/api
-            apps/frontend
 
       - uses: cargo-bins/cargo-binstall@main
 

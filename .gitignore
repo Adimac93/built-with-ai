@@ -1,7 +1,5 @@
 # Rust build artifacts
-apps/api/target/
-apps/agent/target/
-apps/frontend/target/
+/target/
 apps/frontend/dist/
 
 # Secrets / local env

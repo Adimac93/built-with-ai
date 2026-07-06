@@ -2,15 +2,22 @@ FROM docker.io/rust:1-slim AS builder
 
 WORKDIR /app
 
-# Dependency-caching layer: build a dummy main against the real manifests so
-# source edits don't invalidate the compiled dependency layer.
-COPY apps/api/Cargo.toml apps/api/Cargo.lock ./
-RUN mkdir src && echo 'fn main() {}' > src/main.rs \
-  && cargo build --release \
-  && rm -rf src target/release/api target/release/deps/api-*
+# Workspace manifests first — dependency-caching layer builds dummy mains so
+# source edits don't invalidate the compiled dependency layer. All member
+# manifests are needed for the workspace to parse.
+COPY Cargo.toml Cargo.lock ./
+COPY apps/api/Cargo.toml apps/api/
+COPY apps/agent/Cargo.toml apps/agent/
+COPY apps/frontend/Cargo.toml apps/frontend/
+RUN mkdir -p apps/api/src apps/agent/src apps/frontend/src \
+  && echo 'fn main() {}' > apps/api/src/main.rs \
+  && echo 'fn main() {}' > apps/agent/src/main.rs \
+  && echo 'fn main() {}' > apps/frontend/src/main.rs \
+  && cargo build --release -p api \
+  && rm -rf apps/api/src target/release/api target/release/deps/api-*
 
-COPY apps/api/src ./src
-RUN cargo build --release
+COPY apps/api/src apps/api/src
+RUN cargo build --release -p api
 
 FROM docker.io/debian:bookworm-slim
 

@@ -1,4 +1,4 @@
-# Heureka — task runner for the three Rust apps (agent, api, frontend).
+# Heureka — task runner for the Rust workspace (agent, api, frontend).
 # `just --list` shows everything; `just ci` mirrors the CI pipeline.
 
 # dioxus-cli; explicit cargo-bin default because deno ships a conflicting `dx` alias
@@ -10,12 +10,14 @@ default:
 # ── aggregate ────────────────────────────────────────────────────────────────
 
 build: build-agent build-api build-frontend
-test: test-agent test-api test-frontend
+
+test:
+    cargo test --workspace
+
 lint: lint-agent lint-api lint-frontend
+
 fmt:
-    cargo fmt --manifest-path apps/agent/Cargo.toml
-    cargo fmt --manifest-path apps/api/Cargo.toml
-    cargo fmt --manifest-path apps/frontend/Cargo.toml
+    cargo fmt --all
 
 # what CI runs
 ci: lint test build
@@ -33,17 +35,17 @@ dev:
 # ── agent (apps/agent → Cloud Run us-east1) ─────────────────────────────────
 
 build-agent:
-    cargo build --release --manifest-path apps/agent/Cargo.toml
+    cargo build --release -p agent
 
 test-agent:
-    cargo test --manifest-path apps/agent/Cargo.toml
+    cargo test -p agent
 
 lint-agent:
-    cargo clippy --all-targets --manifest-path apps/agent/Cargo.toml -- -D warnings
+    cargo clippy --all-targets -p agent -- -D warnings
 
 # local Vertex auth via gcloud user token (expires ~1h)
 serve-agent:
-    cd apps/agent && GOOGLE_CLOUD_ACCESS_TOKEN="$(gcloud auth print-access-token)" cargo run --release
+    cd apps/agent && GOOGLE_CLOUD_ACCESS_TOKEN="$(gcloud auth print-access-token)" cargo run --release -p agent
 
 deploy-agent:
     bash tools/deploy-agent.sh
@@ -51,17 +53,17 @@ deploy-agent:
 # ── api (apps/api → Cloud Run us-central1) ──────────────────────────────────
 
 build-api:
-    cargo build --release --manifest-path apps/api/Cargo.toml
+    cargo build --release -p api
 
 test-api:
-    cargo test --manifest-path apps/api/Cargo.toml
+    cargo test -p api
 
 lint-api:
-    cargo clippy --all-targets --manifest-path apps/api/Cargo.toml -- -D warnings
+    cargo clippy --all-targets -p api -- -D warnings
 
 # AGENT_URL defaults to http://localhost:8000 inside the binary
 serve-api:
-    cargo run --release --manifest-path apps/api/Cargo.toml
+    cargo run --release -p api
 
 # resolves AGENT_URL from the deployed agent service — deploy agent first
 deploy-api: deploy-agent
@@ -73,10 +75,10 @@ build-frontend:
     bash tools/build-frontend.sh
 
 test-frontend:
-    cargo test --manifest-path apps/frontend/Cargo.toml
+    cargo test -p frontend
 
 lint-frontend:
-    cd apps/frontend && cargo clippy --target wasm32-unknown-unknown -- -D warnings
+    cargo clippy --target wasm32-unknown-unknown -p frontend -- -D warnings
 
 serve-frontend:
     cd apps/frontend && {{dx}} serve --port 8080

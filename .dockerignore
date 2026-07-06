@@ -1,0 +1,8 @@
+# Keep the Docker build context lean: images build from source (api, agent)
+# or from the staged bundle in apps/frontend/dist/web (frontend).
+/target
+.git
+.nx
+node_modules
+.pnpm-store
+.docker

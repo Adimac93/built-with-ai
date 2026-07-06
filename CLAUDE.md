@@ -6,8 +6,9 @@ Heureka — an inventive problem solver (TRIZ + SCAMPER) built entirely in Rust:
 - `apps/api` — axum gateway (`/solve` proxy, `/speech/transcribe`)
 - `apps/agent` — axum service running the TRIZ+SCAMPER pipeline against Gemini (Vertex AI REST)
 
-The three crates are standalone (no cargo workspace). Everything deploys to Google Cloud Run;
-the agent's infra is Terraform under `apps/agent/deployment/terraform/`.
+The three crates form a cargo workspace (root `Cargo.toml`; shared deps via
+`workspace.dependencies`, single root `Cargo.lock` and `target/`). Everything deploys to
+Google Cloud Run; the agent's infra is Terraform under `apps/agent/deployment/terraform/`.
 
 # Tasks
 
