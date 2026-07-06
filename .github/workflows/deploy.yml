@@ -99,10 +99,10 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
-      - name: Install Dioxus CLI
+      - name: Install just and Dioxus CLI
         uses: cargo-bins/cargo-binstall@main
 
-      - run: cargo binstall -y dioxus-cli
+      - run: cargo binstall -y just dioxus-cli
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -114,7 +114,9 @@ jobs:
         run: gcloud auth configure-docker --quiet
 
       - name: Build Frontend (Dioxus)
-        run: bash tools/build-frontend.sh
+        run: just build-frontend
+        env:
+          DX_BIN: dx
 
       - name: Build and Push Docker Image
         run: |
